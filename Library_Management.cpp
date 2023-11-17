@@ -1928,8 +1928,10 @@ public:
             switch (chon)
             {
             case 1:
-                cout << "[1] : Thong ke so sinh vien trong thu vien : ";
+                cout << "[1] : Thong ke so sinh vien trong thu vien\n";
+                cout << "Hien dang co ";
                 cout << students.size() << endl;
+                cout << " sinh vien trong thu vien\n";
                 break;
             case 2:
                 cout << "[2] : Thong ke so dau sach trong thu vien: ";
@@ -2122,12 +2124,9 @@ public:
         string username, password;
     lg:
         system("cls");
-        cout << "\t\t"
-             << "+---------------+" << endl;
-        cout << "\t\t"
-             << "|     Login     |" << endl;
-        cout << "\t\t"
-             << "+---------------+" << endl;
+        cout << "\t\t" << "+---------------------+" << endl;
+        cout << "\t\t" << "|     Login Admin     |" << endl;
+        cout << "\t\t" << "+---------------------+" << endl;
         cout << "\n[!] : Nhap T de vao web voi tu cach user!\n";
     name:
         cout << "- Nhap username: ";
@@ -2289,12 +2288,9 @@ public:
         string username, password;
     front:
         system("cls");
-        cout << "\t\t"
-             << "+-----------------+" << endl;
-        cout << "\t\t"
-             << "|     Register    |" << endl;
-        cout << "\t\t"
-             << "+-----------------+" << endl;
+        cout << "\t\t" << "+----------------------+" << endl;
+        cout << "\t\t" << "|     Register User    |" << endl;
+        cout << "\t\t" << "+----------------------+" << endl;
     name:
         cout << "- Nhap username: ";
         cin >> username;
@@ -2323,8 +2319,13 @@ public:
         }
         if (!valid_account(username, password))
         {
-
-            cout << "\n\t\t Dang ky thanh cong!\n";
+            ofstream File("databasev2.txt", ios::app);
+            File << "\n" <<  username << " " << password;
+            File.close();
+            cout << endl << "\t\tDang ky thanh cong!" << endl;
+                cout << "=> Nhan Enter de den trang chu !";
+                cin.ignore();
+                cin.get();
             ok = true;
             menuv2(username, password);
             return;
@@ -2361,13 +2362,10 @@ public:
         string username, password;
     lg:
         system("cls");
-        cout << "\t\t"
-             << "+---------------+" << endl;
-        cout << "\t\t"
-             << "|     Login     |" << endl;
-        cout << "\t\t"
-             << "+---------------+" << endl;
-        cout << "- Nhap R de dang ky tai khoan!" << endl;
+        cout << "\t\t" << "+--------------------+" << endl;
+        cout << "\t\t" << "|     Login User     |" << endl;
+        cout << "\t\t" << "+--------------------+" << endl;
+        cout << "\t\t[!] : Nhap R de dang ky tai khoan" << endl;
     name:
         cout << "- Nhap username: ";
         cin >> username;
@@ -2406,7 +2404,10 @@ public:
         }
         if (checkuser(username, password, "databasev2.txt"))
         {
-            cout << "\n\t\tDang nhap thanh cong!";
+            cout << "\n\t\tDang nhap thanh cong!\n";
+                cout << "=> Nhan Enter de den trang chu !";
+                cin.ignore();
+                cin.get();
             ok2 = true;
             menuv2(username, password);
         }
