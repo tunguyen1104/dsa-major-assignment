@@ -1630,13 +1630,24 @@ public:
         }
         cout << "\t\tBan chua muon quyen sach nao!\n";
     }
+    int check_phieuquahan_motsinhvien(vector<PhieuMuon> &borrow_pay, string username){
+        int cnt = 0;
+        for (int i = 0; i < borrow_pay.size(); ++i)
+        {
+            if (borrow_pay[i].getMSV() == username)
+            {
+                ++cnt;
+            }
+        }
+        return cnt;
+    }
 };
 //-------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
 class app
 {
-public:
+private:
     // vector<Sach> &books, vector<BanDoc> &students, vector<PhieuMuon> &borrow_pay
     vector<Sach> books;
     vector<BanDoc> students;
@@ -1644,6 +1655,7 @@ public:
     List_Books _books;
     List_BorrowPay _borrowPay;
     List_students _students;
+    public:
     void menu1()
     {
         int chon;
@@ -2036,6 +2048,8 @@ public:
         {
             system("cls");
             cout << "\t     Chuong Trinh Quan Ly Thu Vien." << endl;
+            int cnt_phieuquanhan = _borrowPay.check_phieuquahan_motsinhvien(borrow_pay,username);
+            if(cnt_phieuquanhan) cout << "[Warning] : Ban co " << cnt_phieuquanhan << " quyen sach chua tra cho thu vien!\n";
             cout << "========================MENU=============================\n";
             cout << "==                                                     ==\n";
             cout << "==        1.In toan bo sach co trong thu vien.         ==\n";

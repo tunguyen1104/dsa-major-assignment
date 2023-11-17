@@ -4,3 +4,4 @@
 006,Vo Luyen Dinh Phong,Tieu thuyet,Duong Khai,2015,129000,2
 001,Mua Ha Bat Tan,Tieu Thuyet,TuNguyen,2023,100000,11
 123,Gio Mua Thu,tieu thuyet,ba nghia,2023,100000,1
+356,Naruto,truyen tranh,nagato,1999,25000,2
