@@ -5,6 +5,7 @@
         "vector": "cpp",
         "iosfwd": "cpp",
         "istream": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "string": "cpp"
     }
 }

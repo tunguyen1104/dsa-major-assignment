@@ -232,7 +232,7 @@ string Sach ::getTenSach()
 
 string Sach ::getTheLoai()
 {
-    return TheLoai;
+    return standardization(TheLoai);
 }
 
 string Sach ::getTacGia()
@@ -547,7 +547,7 @@ public:
         cin >> amount;
         cout << "- Nhap so luong cuon sach them vao: ";
         cin >> quantity;
-        Sach New(MS, standardization(Ten), Loai, TG, NXB, amount, quantity);
+        Sach New(MS, Ten, Loai, TG, NXB, amount, quantity);
         books.push_back(New);
         // Không có file outputData_Sach_File vì ?
         ofstream File;
@@ -641,7 +641,7 @@ public:
                 cin >> NXB;
                 cout << "- Nhap gia cuon sach moi: ";
                 cin >> amount;
-                Sach change(MS, standardization(Ten), Loai, TG, NXB, amount, 1);
+                Sach change(MS, standardization(Ten), standardization(Loai), TG, NXB, amount, 1);
                 books[i] = change;
                 break;
             }
@@ -725,7 +725,7 @@ public:
             File.ignore(1, ',');
             File >> quantity;
             File.ignore(1, '\n');
-            Sach s(Ma, standardization(Name_book), TL, TG, NamXB, amount, quantity);
+            Sach s(Ma, standardization(Name_book), standardization(TL), TG, NamXB, amount, quantity);
             books.push_back(s);
         }
         File.close();
@@ -880,6 +880,43 @@ public:
             }
         }
         cout << "\n[!] Khong tim thay quyen sach ban can tim!\n";
+    }
+    void search_book_to_category(vector<Sach> &books)
+    {
+        string category;
+        cin.ignore();
+        bool check = false;
+        cout << "- Nhap the loai ban muon doc: ";
+        getline(cin, category);
+        for (int i = 0; i < books.size(); ++i)
+        {
+            if (books[i].getTheLoai() == standardization(category))
+            {
+                if (!check)
+                {
+                    cout << "\t\t[!] Da tim thay quyen sach co the loai " << standardization(category) << endl
+                         << endl;
+                    cout << center("STT", 5) << " | "
+                         << center("Name", 25) << " | "
+                         << center("The loai", 15) << " | "
+                         << center("Tac Gia", 15) << " | "
+                         << center("Nam xuat ban", 12) << " | "
+                         << center("Amount", 10) << " | "
+                         << center("Quantity", 9) << "\n";
+                    check = true;
+                }
+                cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
+                cout << center(books[i].getMaSach(), 5) << " | "
+                     << center(books[i].getTenSach(), 25) << " | "
+                     << center(books[i].getTheLoai(), 15) << " | "
+                     << center(books[i].getTacGia(), 15) << " | "
+                     << centerv2(books[i].getNamXuatBan(), 12) << " | "
+                     << centerv2(books[i].getAmount(), 10) << " | "
+                     << centerv2(books[i].getQuantity(), 8) << "\n";
+            }
+        }
+        if (!check)
+            cout << "\n[!] Rat xin loi, thu vien khong co the loai ban muon doc!\n";
     }
 };
 //-------------------------------------------------------------------
@@ -1256,7 +1293,14 @@ public:
         }
         PhieuMuon pm(0, nMSV, nMS, standardization(name_students_borrow_pay));
         borrow_pay.push_back(pm);
+        time_t t = time(0);
+        struct tm *Now = localtime(&t);
+        cout << "______________________________________\n";
+        cout << "\t\tYeu cau cua ban dang duoc thuc hien!\n";
+        cout << "\t\tThoi gian: " << Now->tm_hour << ":" << Now->tm_min << ":" << Now->tm_sec << endl;
+        cout << "\t\tNgay: " << Now->tm_mday << "/" << Now->tm_mon + 1 << "/" << Now->tm_year + 1900 << endl;
         cout << "\t\tTao phieu muon thanh cong!\n";
+        cout << "______________________________________\n";
         ofstream File;
         File.open("PhieuMuon.txt", ios::app);
         int i = borrow_pay.size() - 1;
@@ -1303,7 +1347,7 @@ public:
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
             File
-                << borrow_pay[borrow_pay.size() - 1].getMSV() << "," << borrow_pay[borrow_pay.size() - 1].getMaSach() << "," << standardization(borrow_pay[borrow_pay.size() - 1].name_students_borrow_pay) << "," << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getNgay() << ","
+                << borrow_pay[borrow_pay.size() - 1].getMSV() << "," << borrow_pay[borrow_pay.size() - 1].getMaSach() << "," << borrow_pay[borrow_pay.size() - 1].getname_students() << "," << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getNgay() << ","
                 << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getThang() << "," << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getNam() << "," << borrow_pay[borrow_pay.size() - 1].xNgayTra.getNgay() << "," << borrow_pay[borrow_pay.size() - 1].xNgayTra.getThang() << ","
                 << borrow_pay[borrow_pay.size() - 1].xNgayTra.getNam();
             if (cnt < borrow_pay.size() - 1)
@@ -1410,7 +1454,7 @@ public:
             cout << "\t\tBan chon thoat!\n";
             return;
         }
-        if (borrow_pay[ok].name_students_borrow_pay == standardization(name))
+        if (borrow_pay[ok].getname_students() == standardization(name))
         {
             goto xms;
         }
@@ -1493,8 +1537,8 @@ public:
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
             if (borrow_pay[i].xNgayTra.getNam() > year || (borrow_pay[i].xNgayTra.getNam() == year && (borrow_pay[i].xNgayTra.getThang() > month ||
-                  (borrow_pay[i].xNgayTra.getThang() == month &&
-                   borrow_pay[i].xNgayTra.getNgay() > day))))
+                                                                                                       (borrow_pay[i].xNgayTra.getThang() == month &&
+                                                                                                        borrow_pay[i].xNgayTra.getNgay() > day))))
             {
                 continue;
             }
@@ -1763,10 +1807,11 @@ public:
             cout << "==                                                     ==\n";
             cout << "==        1.Tim kiem sach theo ma sach                 ==\n";
             cout << "==        2.Tim kiem sach theo name                    ==\n";
-            cout << "==        3.Tim kiem cac ban doc theo ma sinh vien     ==\n";
-            cout << "==        4.Tim kiem ban doc theo name                 ==\n";
-            cout << "==        5.Tim kiem phieu sach theo ten sinh vien.    ==\n";
-            cout << "==        6.Exit.                                      ==\n";
+            cout << "==        3.Tim kiem theo the loai sach                ==\n";
+            cout << "==        4.Tim kiem cac ban doc theo ma sinh vien     ==\n";
+            cout << "==        5.Tim kiem ban doc theo name                 ==\n";
+            cout << "==        6.Tim kiem phieu sach theo ten sinh vien.    ==\n";
+            cout << "==        7.Exit.                                      ==\n";
             cout << "=========================================================\n";
             cout << "=> Moi chon chuc nang: ";
             cin >> chon;
@@ -1783,25 +1828,29 @@ public:
                 _books.search_book_to_name(books);
                 break;
             case 3:
-                cout << "[3] : Tim kiem ban doc theo ma sinh vien\n";
-                _students.search_student_to_id(students);
+                cout << "[3] : Tim kiem sach theo the loai\n";
+                _books.search_book_to_category(books);
                 break;
             case 4:
-                cout << "[4] : Tim kiem ban doc theo name\n";
-                _students.search_student_to_name(students);
+                cout << "[4] : Tim kiem ban doc theo ma sinh vien\n";
+                _students.search_student_to_id(students);
                 break;
             case 5:
-                cout << "[5] : Tim kiem ten sinh vien da muon sach\n";
-                _borrowPay.search_borrow_pay_namestudent(borrow_pay);
+                cout << "[5] : Tim kiem ban doc theo name\n";
+                _students.search_student_to_name(students);
                 break;
             case 6:
-                cout << "[6] : Exit\n";
+                cout << "[6] : Tim kiem ten sinh vien da muon sach\n";
+                _borrowPay.search_borrow_pay_namestudent(borrow_pay);
+                break;
+            case 7:
+                cout << "[7] : Exit\n";
                 return;
             default:
                 cout << "\t\tNhap sai lua chon!\n";
                 break;
             }
-            if (chon != 6)
+            if (chon != 7)
             {
                 cout << endl;
                 cout << "=========================" << endl;
@@ -1809,7 +1858,7 @@ public:
                 cin.ignore();
                 cin.get();
             }
-        } while (chon != 6);
+        } while (chon != 7);
     }
     void menu6()
     {
@@ -1948,8 +1997,9 @@ public:
             cout << "==        3.Tra sach.                                  ==\n";
             cout << "==        4.In cac phieu muon sach cua ban.            ==\n";
             cout << "==        5.Tim kiem sach theo ten.                    ==\n";
-            cout << "==        6.Sap xep sach theo tang dan gia tien.       ==\n";
-            cout << "==        7.Exit.                                      ==\n";
+            cout << "==        6.Tim kiem theo the loai sach ban muon doc.  ==\n";
+            cout << "==        7.Sap xep sach theo tang dan gia tien.       ==\n";
+            cout << "==        8.Exit.                                      ==\n";
             cout << "==                                                     ==\n";
             cout << "=========================================================\n";
             cout << "=> Moi chon chuc nang: ";
@@ -1978,19 +2028,23 @@ public:
                 _books.search_book_to_name(books);
                 break;
             case 6:
-                cout << "[6] : Sap xep sach theo tang dan gia tien\n";
+                cout << "[6] : Tim kiem sach theo the loai ban muon doc\n";
+                _books.search_book_to_category(books);
+                break;
+            case 7:
+                cout << "[7] : Sap xep sach theo tang dan gia tien\n";
                 _books.arrange_book_amount(books);
                 cout << "\t\tDa sap xep thanh cong!\n";
                 break;
-            case 7:
-                cout << "[7] : Thoat\n";
+            case 8:
+                cout << "[8] : Thoat\n";
                 cout << "\n\t\tXin chao va hen gap lai !\n";
                 break;
             default:
                 cout << "\t\tNhap sai lua chon!\n";
                 break;
             }
-            if (chon != 7)
+            if (chon != 8)
             {
                 cout << endl;
                 cout << "=========================" << endl;
@@ -1998,7 +2052,7 @@ public:
                 cin.ignore();
                 cin.get();
             }
-        } while (chon != 7);
+        } while (chon != 8);
     }
 };
 class Admin : public app
