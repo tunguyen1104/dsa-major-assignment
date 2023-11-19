@@ -10,34 +10,37 @@ using namespace std;
 bool flag = false; // check xem web đang ở tư cách admin hay người dùng
 bool ok2 = false;  // check xem da dang nhap vao web hay chua
 bool ok = false;   // check dang ky
-/* Convert double to string with specified number of places after the decimal
-   and left padding. */
-std::string prd1(const string x, const int width)
-{
-    stringstream ss;
-    ss << fixed;
-    ss.width(width); // set  width around displayed #
-    ss << x;
-    return ss.str();
-}
-std::string prd2(const int x, const int width)
-{
-    stringstream ss;
-    ss << fixed;
-    ss.width(width); // set  width around displayed #
-    ss << x;
-    return ss.str();
-}
-/*! Center-aligns string within a field of width w. Pads with blank spaces
-    to enforce alignment. */
-std::string center(const string s, const int w)
+/*! Kẻ bảng, căn giữa chuỗi */
+string center(const string s, const int width)
 {
     stringstream ss, spaces;
-    int padding = w - s.size(); // count excess room to pad
+    int padding = width - s.size(); // đếm phần thừa để căn
     for (int i = 0; i < padding / 2; ++i)
         spaces << " ";
     ss << spaces.str() << s << spaces.str(); // format with padding
-    if (padding > 0 && padding % 2 != 0)     // if odd #, add 1 space
+    if (padding > 0 && padding % 2 != 0)     // nếu padding là số lẻ thì thêm 1 dấu cách vào sau cùng ss.
+        ss << " ";
+    return ss.str();
+}
+int size_number(int s)
+{
+    int cnt = 0;
+    while (s > 0)
+    {
+        s /= 10;
+        ++cnt;
+    }
+    return cnt;
+}
+// nếu data là số
+string centerv2(const int s, const int width)
+{
+    stringstream ss, spaces;
+    int padding = width - size_number(s);
+    for (int i = 0; i < padding / 2; ++i)
+        spaces << " ";
+    ss << spaces.str() << s << spaces.str();
+    if (padding > 0 && padding % 2 != 0)
         ss << " ";
     return ss.str();
 }
@@ -92,6 +95,12 @@ string convert_date(string s) // vd: 5/7/2023 -> 05/07/2023
     if (s[5] != '/')
         s.insert(3, "0");
     return s;
+}
+string convert_datev2(int day, int month, int year)
+{
+    string s;
+    s += to_string(day) + "/" + to_string(month) + "/" + to_string(year);
+    return convert_date(s);
 }
 //------------------------------------------------
 class Date
@@ -880,13 +889,13 @@ public:
         cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
         for (int i = 0; i < books.size(); ++i)
         {
-            cout << prd1(books[i].getMaSach(), 5) << " | "
-                 << prd1(books[i].getTenSach(), 25) << " | "
-                 << prd1(books[i].getTheLoai(), 15) << " | "
-                 << prd1(books[i].getTacGia(), 15) << " | "
-                 << prd2(books[i].getNamXuatBan(), 12) << " | "
-                 << prd2(books[i].getAmount(), 10) << " | "
-                 << prd2(books[i].getQuantity(), 8) << "\n";
+            cout << center(books[i].getMaSach(), 5) << " | "
+                 << center(books[i].getTenSach(), 25) << " | "
+                 << center(books[i].getTheLoai(), 15) << " | "
+                 << center(books[i].getTacGia(), 15) << " | "
+                 << centerv2(books[i].getNamXuatBan(), 12) << " | "
+                 << centerv2(books[i].getAmount(), 10) << " | "
+                 << centerv2(books[i].getQuantity(), 8) << "\n";
             if (i < books.size() - 1)
                 cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
         }
@@ -925,13 +934,13 @@ public:
             File.ignore(1, ',');
             File >> quantity;
             File.ignore(1, '\n');
-            cout << prd1(Ma, 5) << " | "
-                 << prd1(Name_book, 25) << " | "
-                 << prd1(TL, 15) << " | "
-                 << prd1(TG, 15) << " | "
-                 << prd2(NamXB, 12) << " | "
-                 << prd2(amount, 10) << " | "
-                 << prd2(quantity, 8) << "\n";
+            cout << center(Ma, 5) << " | "
+                 << center(Name_book, 25) << " | "
+                 << center(TL, 15) << " | "
+                 << center(TG, 15) << " | "
+                 << centerv2(NamXB, 12) << " | "
+                 << centerv2(amount, 10) << " | "
+                 << centerv2(quantity, 8) << "\n";
             cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
         }
         File.close();
@@ -947,13 +956,13 @@ public:
              << center("Quantity", 9) << "\n";
 
         cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
-        cout << prd1(books[i].getMaSach(), 5) << " | "
-             << prd1(books[i].getTenSach(), 25) << " | "
-             << prd1(books[i].getTheLoai(), 15) << " | "
-             << prd1(books[i].getTacGia(), 15) << " | "
-             << prd2(books[i].getNamXuatBan(), 12) << " | "
-             << prd2(books[i].getAmount(), 10) << " | "
-             << prd2(books[i].getQuantity(), 8) << "\n";
+        cout << center(books[i].getMaSach(), 5) << " | "
+             << center(books[i].getTenSach(), 25) << " | "
+             << center(books[i].getTheLoai(), 15) << " | "
+             << center(books[i].getTacGia(), 15) << " | "
+             << centerv2(books[i].getNamXuatBan(), 12) << " | "
+             << centerv2(books[i].getAmount(), 10) << " | "
+             << centerv2(books[i].getQuantity(), 8) << "\n";
     }
     // static giúp chúng trở thành các hàm tĩnh của class, và do đó, chúng có thể được sử dụng như làm hàm so sánh thông thường cho std::sort.
     static bool cmpBook_amount_small_large(Sach &a, Sach &b)
@@ -1235,12 +1244,12 @@ public:
         cout << string(5 + 15 * 2 + 25 + 10 + 12 + 5 * 3, '_') << "\n";
         for (int i = 0; i < students.size(); ++i)
         {
-            cout << prd2(i + 1, 5) << " | "
-                 << prd1(students[i].getMSV(), 15) << " | "
-                 << prd1(students[i].getHoTen(), 25) << " | "
-                 << prd1(students[i].getNganhHoc(), 15) << " | "
-                 << prd1(students[i].getKhoa(), 10) << " | "
-                 << prd1(students[i].getDate_of_Birth(), 11) << "\n";
+            cout << centerv2(i + 1, 5) << " | "
+                 << center(students[i].getMSV(), 15) << " | "
+                 << center(students[i].getHoTen(), 25) << " | "
+                 << center(students[i].getNganhHoc(), 15) << " | "
+                 << center(students[i].getKhoa(), 10) << " | "
+                 << center(students[i].getDate_of_Birth(), 11) << "\n";
             if (i < students.size() - 1)
                 cout << string(5 + 15 * 2 + 25 + 10 + 12 + 5 * 3, '_') << "\n";
         }
@@ -1255,12 +1264,12 @@ public:
              << center("Ngay sinh", 15) << "\n";
 
         cout << string(5 + 15 * 3 + 25 + 10 + 5 * 3, '_') << "\n";
-        cout << prd2(i + 1, 5) << " | "
-             << prd1(students[i].getMSV(), 15) << " | "
-             << prd1(students[i].getHoTen(), 25) << " | "
-             << prd1(students[i].getNganhHoc(), 15) << " | "
-             << prd1(students[i].getKhoa(), 10) << " | "
-             << prd1(students[i].getDate_of_Birth(), 15) << "\n";
+        cout << centerv2(i + 1, 5) << " | "
+             << center(students[i].getMSV(), 15) << " | "
+             << center(students[i].getHoTen(), 25) << " | "
+             << center(students[i].getNganhHoc(), 15) << " | "
+             << center(students[i].getKhoa(), 10) << " | "
+             << center(students[i].getDate_of_Birth(), 15) << "\n";
     }
     static bool cmp_student_to_name(BanDoc &a, BanDoc &b)
     {
@@ -1494,24 +1503,20 @@ public:
              << center("Ho Ten", 25) << " | "
              << center("Ma sinh vien", 25) << " | "
              << center("Ma sach", 15) << " | "
-             << center("Ngay muon", 15) << " | "
+             << center("Ngay muon", 14) << " | "
              << center("Ngay tra", 12) << "\n";
 
-        cout << string(5 + 15 * 2 + 25 * 2 + 12 + 5 * 3, '_') << "\n";
+        cout << string(5 + 15 + 25 * 2 + 14 + 12 + 5 * 3, '_') << "\n";
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
-            cout << prd2(i + 1, 5) << " | "
-                 << prd1(borrow_pay[i].name_students_borrow_pay, 25) << " | "
-                 << prd1(borrow_pay[i].getMSV(), 25) << " | "
-                 << prd1(borrow_pay[i].getMaSach(), 15) << " |   "
-                 << prd2(borrow_pay[i].xNgayMuon.getNgay(), 2) << "/"
-                 << prd2(borrow_pay[i].xNgayMuon.getThang(), 2) << "/"
-                 << prd2(borrow_pay[i].xNgayMuon.getNam(), 2) << "    |  "
-                 << prd2(borrow_pay[i].xNgayTra.getNgay(), 2) << "/"
-                 << prd2(borrow_pay[i].xNgayTra.getThang(), 2) << "/"
-                 << prd2(borrow_pay[i].xNgayTra.getNam(), 2) << "\n";
+            cout << centerv2(i + 1, 5) << " | "
+                 << center(borrow_pay[i].getname_students(), 25) << " | "
+                 << center(borrow_pay[i].getMSV(), 25) << " | "
+                 << center(borrow_pay[i].getMaSach(), 15) << " | "
+                 << center(convert_datev2(borrow_pay[i].xNgayMuon.getNgay(), borrow_pay[i].xNgayMuon.getThang(), borrow_pay[i].xNgayMuon.getNam()), 14) << " | "
+                 << center(convert_datev2(borrow_pay[i].xNgayTra.getNgay(), borrow_pay[i].xNgayTra.getThang(), borrow_pay[i].xNgayTra.getNam()), 12) << "\n";
             if (i < borrow_pay.size() - 1)
-                cout << string(5 + 15 * 2 + 25 * 2 + 12 + 5 * 3, '_') << "\n";
+                cout << string(5 + 15 + 25 * 2 + 14 + 12 + 5 * 3, '_') << "\n";
         }
     }
     void TraSach(vector<Sach> &books, vector<PhieuMuon> &borrow_pay)
@@ -1583,6 +1588,16 @@ public:
         outputData_PhieuMuon_File(borrow_pay);
         outputData_Sach_File(books);
     }
+    void xuat_thongtin1phieumuon(vector<PhieuMuon> &borrow_pay, int i)
+    {
+        cout << string(5 + 15 + 25 * 2 + 14 + 12 + 5 * 3, '_') << "\n";
+        cout << centerv2(i + 1, 5) << " | "
+             << center(borrow_pay[i].getname_students(), 25) << " | "
+             << center(borrow_pay[i].getMSV(), 25) << " | "
+             << center(borrow_pay[i].getMaSach(), 15) << " | "
+             << center(convert_datev2(borrow_pay[i].xNgayMuon.getNgay(), borrow_pay[i].xNgayMuon.getThang(), borrow_pay[i].xNgayMuon.getNam()), 14) << " | "
+             << center(convert_datev2(borrow_pay[i].xNgayTra.getNgay(), borrow_pay[i].xNgayTra.getThang(), borrow_pay[i].xNgayTra.getNam()), 12) << "\n";
+    }
     void search_borrow_pay_namestudent(vector<PhieuMuon> &borrow_pay)
     {
         string name;
@@ -1598,39 +1613,15 @@ public:
                      << center("Ho Ten", 25) << " | "
                      << center("Ma sinh vien", 25) << " | "
                      << center("Ma sach", 15) << " | "
-                     << center("Ngay muon", 15) << " | "
+                     << center("Ngay muon", 14) << " | "
                      << center("Ngay tra", 12) << "\n";
-
-                cout << string(5 + 15 * 2 + 25 * 2 + 12 + 5 * 3, '_') << "\n";
-                cout << prd2(i + 1, 5) << " | "
-                     << prd1(borrow_pay[i].getname_students(), 25) << " | "
-                     << prd1(borrow_pay[i].getMSV(), 25) << " | "
-                     << prd1(borrow_pay[i].getMaSach(), 15) << " |   "
-                     << prd2(borrow_pay[i].xNgayMuon.getNgay(), 2) << "/"
-                     << prd2(borrow_pay[i].xNgayMuon.getThang(), 2) << "/"
-                     << prd2(borrow_pay[i].xNgayMuon.getNam(), 2) << "    |  "
-                     << prd2(borrow_pay[i].xNgayTra.getNgay(), 2) << "/"
-                     << prd2(borrow_pay[i].xNgayTra.getThang(), 2) << "/"
-                     << prd2(borrow_pay[i].xNgayTra.getNam(), 2) << "\n";
+                xuat_thongtin1phieumuon(borrow_pay, i);
                 return;
             }
         }
         cout << "\n[!] : Khong ton tai phieu sach co ten ban doc " << name << " !\n\n";
     }
-    void xuat_thongtin1phieumuon(vector<PhieuMuon> &borrow_pay, int i)
-    {
-        cout << string(5 + 15 * 2 + 25 * 2 + 12 + 5 * 3, '_') << "\n";
-        cout << prd2(i + 1, 5) << " | "
-             << prd1(borrow_pay[i].name_students_borrow_pay, 25) << " | "
-             << prd1(borrow_pay[i].getMSV(), 25) << " | "
-             << prd1(borrow_pay[i].getMaSach(), 15) << " |   "
-             << prd2(borrow_pay[i].xNgayMuon.getNgay(), 2) << "/"
-             << prd2(borrow_pay[i].xNgayMuon.getThang(), 2) << "/"
-             << prd2(borrow_pay[i].xNgayMuon.getNam(), 2) << "    |  "
-             << prd2(borrow_pay[i].xNgayTra.getNgay(), 2) << "/"
-             << prd2(borrow_pay[i].xNgayTra.getThang(), 2) << "/"
-             << prd2(borrow_pay[i].xNgayTra.getNam(), 2) << "\n";
-    }
+
     void InPhieumuon_quahan(vector<PhieuMuon> &borrow_pay)
     {
         PhieuMuon current_day(0, "test", "test");
@@ -1641,7 +1632,7 @@ public:
              << center("Ho Ten", 25) << " | "
              << center("Ma sinh vien", 25) << " | "
              << center("Ma sach", 15) << " | "
-             << center("Ngay muon", 15) << " | "
+             << center("Ngay muon", 14) << " | "
              << center("Ngay tra", 12) << "\n";
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
@@ -1663,7 +1654,7 @@ public:
              << center("Ho Ten", 25) << " | "
              << center("Ma sinh vien", 25) << " | "
              << center("Ma sach", 15) << " | "
-             << center("Ngay muon", 15) << " | "
+             << center("Ngay muon", 14) << " | "
              << center("Ngay tra", 12) << "\n";
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
