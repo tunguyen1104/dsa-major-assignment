@@ -1,10 +1,4 @@
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <vector>
-#include <algorithm>
-#include <sstream>
-#include <ctime>
+#include <bits/stdc++.h>
 using namespace std;
 #define endl "\n"
 bool flag = false; // check xem web đang ở tư cách admin hay người dùng
@@ -378,219 +372,85 @@ int PhieuMuon::nNgayPlus(int nN)
 {
     time_t t = time(0);
     struct tm *ta = localtime(&t);
-    ta->tm_mon = ta->tm_mon + 1;
-    ta->tm_year = ta->tm_year + 1900;
-    if (ta->tm_mon == 1 || ta->tm_mon == 3 || ta->tm_mon == 5 || ta->tm_mon == 7 || ta->tm_mon == 8 || ta->tm_mon == 10)
-    {
-        // 1 tháng có 31 ngày: gọi tổng ngày =  lấy ngày hiện tại + nN số ngày nhập vào. đem so sánh với số 31
-        // Nếu nhỏ hơn hoặc bằng 31 thì tháng vẫn giữ nguyên, tổng ngày = ngày
-        // Nếu lớn hơn 31 thì lấy tổng ngày trừ cho 31 -> số tháng tăng lên 1, số ngày là kết quả của phép trừ
+    ta->tm_mon += 1;
+    ta->tm_year += 1900;
 
-        int nTongNgay = 0;
-        nTongNgay = ta->tm_mday + nN;
-        if (nTongNgay <= 31)
+    int nTongNgay = ta->tm_mday + nN;
+    if (ta->tm_mon == 1 || ta->tm_mon == 3 || ta->tm_mon == 5 || ta->tm_mon == 7 || ta->tm_mon == 8 || ta->tm_mon == 10 || ta->tm_mon == 12)
+    {
+        if (nTongNgay > 31)
         {
-            ta->tm_mday += nN;
-            return ta->tm_mday;
-        }
-        else
-        {
-            ta->tm_mday = nTongNgay - 31;
-            ta->tm_mon += 1;
-            return ta->tm_mday;
+            nTongNgay -= 31;
         }
     }
-    else if (ta->tm_mon == 4 || ta->tm_mon == 6 || ta->tm_mon == 9 || ta->tm_mon == 11)
+    else if (ta->tm_mon == 2)
     {
-        int nTongNgay = 0;
-        nTongNgay = ta->tm_mday + nN;
-        if (nTongNgay <= 30)
+        int maxDays = (ktrNamNhuan()) ? 29 : 28;
+        if (nTongNgay > maxDays)
         {
-            ta->tm_mday += nN;
-            return ta->tm_mday;
-        }
-        else
-        {
-            ta->tm_mday = nTongNgay - 30;
-            ta->tm_mon += 1;
-            return ta->tm_mday;
-        }
-    }
-    else if (ta->tm_mon == 12)
-    {
-        int nTongNgay = 0;
-        int nTongThang = 0;
-        nTongNgay = ta->tm_mday + nN;
-        if (nTongNgay <= 31)
-        {
-            ta->tm_mday += nN;
-            return ta->tm_mday;
-        }
-        else
-        {
-            ta->tm_mday = nTongNgay - 31;
-            ta->tm_mon = 1;
-            ta->tm_year += 1;
-            return ta->tm_mday;
-        }
-    }
-    if (ktrNamNhuan() == true)
-    {
-        if (ta->tm_mon == 2)
-        {
-            int nTongNgay = 0;
-            nTongNgay = ta->tm_mday + nN;
-            if (nTongNgay <= 29)
-            {
-                ta->tm_mday += nN;
-                return ta->tm_mday;
-            }
-            else
-            {
-                ta->tm_mday = nTongNgay - 29;
-                ta->tm_mon += 1;
-                return ta->tm_mday;
-            }
+            nTongNgay -= maxDays;
         }
     }
     else
     {
-        if (ta->tm_mon == 2)
+        if (nTongNgay > 30)
         {
-            int nTongNgay = 0;
-            nTongNgay = ta->tm_mday + nN;
-            if (nTongNgay <= 28)
-            {
-                ta->tm_mday += nN;
-                return ta->tm_mday;
-            }
-            else
-            {
-                ta->tm_mday = nTongNgay - 28;
-                ta->tm_mon += 1;
-                return ta->tm_mday;
-            }
+            nTongNgay -= 30;
         }
     }
-    return 0;
+    return nTongNgay;
 }
+
 int PhieuMuon::nThangPlus(int nN)
 {
     time_t t = time(0);
     struct tm *ta = localtime(&t);
-    ta->tm_mon = ta->tm_mon + 1;
-    ta->tm_year = ta->tm_year + 1900;
+    ta->tm_mon += 1;
+    ta->tm_year += 1900;
+
+    int nTongNgay = ta->tm_mday + nN;
     if (ta->tm_mon == 1 || ta->tm_mon == 3 || ta->tm_mon == 5 || ta->tm_mon == 7 || ta->tm_mon == 8 || ta->tm_mon == 10)
     {
-        // 1 tháng có 31 ngày: gọi tổng ngày =  lấy ngày hiện tại + nN số ngày nhập vào. đem so sánh với số 31
-        // Nếu nhỏ hơn hoặc bằng 31 thì tháng vẫn giữ nguyên, tổng ngày = ngày
-        // Nếu lớn hơn 31 thì lấy tổng ngày trừ cho 31 -> số tháng tăng lên 1, số ngày là kết quả của phép trừ
-        //
-        int nTongNgay = 0;
-        nTongNgay = ta->tm_mday + nN;
-        if (nTongNgay <= 31)
+        if (nTongNgay > 31)
         {
-            ta->tm_mday += nN;
-            return ta->tm_mon;
-        }
-        else
-        {
-            ta->tm_mday = nTongNgay - 31;
             ta->tm_mon += 1;
-            return ta->tm_mon;
-        }
-    }
-    else if (ta->tm_mon == 4 || ta->tm_mon == 6 || ta->tm_mon == 9 || ta->tm_mon == 11)
-    {
-        int nTongNgay = 0;
-        nTongNgay = ta->tm_mday + nN;
-        if (nTongNgay <= 30)
-        {
-            ta->tm_mday += nN;
-            return ta->tm_mon;
-        }
-        else
-        {
-            ta->tm_mday = nTongNgay - 30;
-            ta->tm_mon += 1;
-            return ta->tm_mon;
         }
     }
     else if (ta->tm_mon == 12)
     {
-        int nTongNgay = 0;
-        int nTongThang = 0;
-        nTongNgay = ta->tm_mday + nN;
-        if (nTongNgay <= 31)
+        if (nTongNgay > 31)
         {
-            ta->tm_mday += nN;
-            return ta->tm_mon;
-        }
-        else
-        {
-            ta->tm_mday = nTongNgay - 31;
             ta->tm_mon = 1;
-            ta->tm_year += 1;
-            return ta->tm_mon;
         }
     }
-    if (ktrNamNhuan() == true)
+    else if (ta->tm_mon == 2)
     {
-        if (ta->tm_mon == 2)
+        int maxDays = (ktrNamNhuan()) ? 29 : 28;
+        if (nTongNgay > maxDays)
         {
-            int nTongNgay = 0;
-            nTongNgay = ta->tm_mday + nN;
-            if (nTongNgay <= 29)
-            {
-                ta->tm_mday += nN;
-                return ta->tm_mon;
-            }
-            else
-            {
-                ta->tm_mday = nTongNgay - 29;
-                ta->tm_mon += 1;
-                return ta->tm_mon;
-            }
+            ta->tm_mon += 1;
         }
     }
     else
     {
-        if (ta->tm_mon == 2)
+        if (nTongNgay > 30)
         {
-            int nTongNgay = 0;
-            nTongNgay = ta->tm_mday + nN;
-            if (nTongNgay <= 28)
-            {
-                ta->tm_mday += nN;
-                return ta->tm_mon;
-            }
-            else
-            {
-                ta->tm_mday = nTongNgay - 28;
-                ta->tm_mon += 1;
-                return ta->tm_mon;
-            }
+            ta->tm_mon += 1;
         }
     }
-    return 0;
+    return ta->tm_mon;
 }
+
 int PhieuMuon::nNamPlus(int nN)
 {
     time_t t = time(0);
     struct tm *ta = localtime(&t);
     ta->tm_mon = ta->tm_mon + 1;
     ta->tm_year = ta->tm_year + 1900;
-    if (ta->tm_mon == 12)
+    int nTongNgay = ta->tm_mday + nN;
+    if (ta->tm_mon == 12 && nTongNgay > 31)
     {
-        int nTongNgay = 0;
-        nTongNgay = ta->tm_mday + nN;
-        if (nTongNgay > 31)
-        {
-            ta->tm_mday = nTongNgay - 31;
-            ta->tm_mon = 1;
-            ta->tm_year += 1;
-            return ta->tm_year;
-        }
+        ta->tm_year += 1;
     }
     return ta->tm_year;
 }
@@ -600,13 +460,9 @@ bool PhieuMuon::ktrNamNhuan()
     struct tm *ta = localtime(&t);
     ta->tm_year = ta->tm_year + 1900;
     if (ta->tm_year % 400 == 0 || ta->tm_year % 4 == 0 && ta->tm_year % 100 != 0)
-    {
         return true;
-    }
     else
-    {
         return false;
-    }
 }
 //----------------------------------------------------------------------
 class List_Books
@@ -1352,7 +1208,7 @@ public:
         {
             if (books[i].getMaSach() == nMS)
             {
-                cout << "\t\t" << nMS << " : " << books[i].getTenSach() << " : " << books[i].getQuantity() << endl;
+                cout << "\t\t" << nMS << " : " << books[i].getTenSach() << " | quantity : " << books[i].getQuantity() << endl;
             }
         }
         string nMSV = "";
@@ -1417,7 +1273,7 @@ public:
                  << borrow_pay[i].xNgayMuon.getThang() << "," << borrow_pay[i].xNgayMuon.getNam() << "," << borrow_pay[i].xNgayTra.getNgay() << ","
                  << borrow_pay[i].xNgayTra.getThang() << "," << borrow_pay[i].xNgayTra.getNam();
         File.close();
-        // Sửa quantity của quyển sách vừa mượn trong books
+        // Sửa quantity của quyển sách vừa mượn
         for (int i = 0; i < books.size(); ++i)
         {
             if (books[i].getMaSach() == nMS)
@@ -1636,9 +1492,7 @@ public:
              << center("Ngay tra", 12) << "\n";
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
-            if (borrow_pay[i].xNgayTra.getNam() > year ||
-                (borrow_pay[i].xNgayTra.getNam() == year &&
-                 (borrow_pay[i].xNgayTra.getThang() > month ||
+            if (borrow_pay[i].xNgayTra.getNam() > year || (borrow_pay[i].xNgayTra.getNam() == year && (borrow_pay[i].xNgayTra.getThang() > month ||
                   (borrow_pay[i].xNgayTra.getThang() == month &&
                    borrow_pay[i].xNgayTra.getNgay() > day))))
             {
