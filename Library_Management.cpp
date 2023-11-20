@@ -332,8 +332,9 @@ string BanDoc ::getKhoa()
 //----------------------------------------------------------------------------------------
 class PhieuMuon : public BanDoc, public Sach, public Date
 {
-public:
+private:
     string name_students_borrow_pay;
+public:
     Date xNgayMuon, xNgayTra;
     // Các hàm xử lí chuẩn ngày
     int nNgayPlus(int nN);
@@ -820,7 +821,7 @@ public:
              << centerv2(books[i].getAmount(), 10) << " | "
              << centerv2(books[i].getQuantity(), 8) << "\n";
     }
-    // static giúp chúng trở thành các hàm tĩnh của class, và do đó, chúng có thể được sử dụng như làm hàm so sánh thông thường cho std::sort.
+    // static giúp chúng trở thành các hàm tĩnh của class và do đó, chúng có thể được sử dụng như làm hàm so sánh thông thường cho std::sort.
     static bool cmpBook_amount_small_large(Sach &a, Sach &b)
     {
         return a.getAmount() < b.getAmount();
@@ -1397,7 +1398,7 @@ public:
     }
     void Export_a_list_of_borrowed_tickets(vector<PhieuMuon> &borrow_pay)
     {
-        cout << "\t\t\t\tIn ra cac phieu muon sach thu vien" << endl;
+        cout << "\t\t\t\tPhieu muon sach thu vien" << endl;
         cout << endl;
         cout << center("STT", 5) << " | "
              << center("Ho Ten", 25) << " | "
@@ -2055,7 +2056,7 @@ public:
         } while (chon != 8);
     }
 };
-class Admin : public app
+class Login_Signup : public app
 {
 public:
     bool checkuser(string username, string password, string filetxt)
@@ -2424,7 +2425,7 @@ public:
 };
 int main()
 {
-    Admin key;
+    Login_Signup key;
     key.admin_login();
     return 0;
 }
