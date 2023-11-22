@@ -1,7 +1,0 @@
-002,Dragon Ball,Truyen tranh,Toriyama,1995,30000,1
-4566,Yeu Than Ky,Tieu thuyet,Nhiep ly,2023,123456,1
-003,Conan,Truyen tranh,Aoyama,1997,30000,2
-006,Vo Luyen Dinh Phong,Tieu thuyet,Duong Khai,2015,129000,2
-001,Mua Ha Bat Tan,Tieu Thuyet,TuNguyen,2023,100000,10
-123,Gio Mua Thu,tieu thuyet,ba nghia,2023,100000,0
-356,Naruto,truyen tranh,nagato,1999,25000,2

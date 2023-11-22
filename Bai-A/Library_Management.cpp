@@ -2,6 +2,7 @@
 using namespace std;
 #define endl "\n"
 bool flag = false; // check xem web đang ở tư cách admin hay người dùng
+bool flagv2 = false;// check đã vào các mục menu con hay chưa, nếu vào rồi mà ra đây thì trước đó đã bấm Exit
 bool ok2 = false;  // check xem da dang nhap vao web hay chua
 bool ok = false;   // check dang ky
 /*! Kẻ bảng, căn giữa chuỗi */
@@ -95,6 +96,19 @@ string convert_datev2(int day, int month, int year)
     string s;
     s += to_string(day) + "/" + to_string(month) + "/" + to_string(year);
     return convert_date(s);
+}
+//lấy thời gian thực-----------------------------
+string get_time()
+{
+	time_t now = time(0);
+	tm *ltm = localtime(&now);
+	return to_string(ltm->tm_hour) + ":" + to_string(ltm->tm_min) + ":" + to_string(ltm->tm_sec);
+}
+string get_day()
+{
+	time_t now = time(0);
+	tm *ltm = localtime(&now);
+	return convert_date(to_string(ltm->tm_mday) + "/" + to_string(1 + ltm->tm_mon) + "/" + to_string(1900 + ltm->tm_year));
 }
 //------------------------------------------------
 class Date
@@ -334,6 +348,7 @@ class PhieuMuon : public BanDoc, public Sach, public Date
 {
 private:
     string name_students_borrow_pay;
+
 public:
     Date xNgayMuon, xNgayTra;
     // Các hàm xử lí chuẩn ngày
@@ -587,7 +602,8 @@ public:
             if (books[i].getMaSach() == Find)
             {
                 check_find_sach = true;
-
+            xuat_thongtin_1quyen(books, i);
+            cout << "________________________________________________" << endl;
             ms:
                 cout << "- Nhap ma sach moi: ";
                 getline(cin, MS);
@@ -1038,6 +1054,8 @@ public:
             if (students[i].getMSV() == MSV)
             {
                 check_find_student = true;
+                xuat_thongtin_1student(students, i);
+                cout << "______________________________" << endl;
             ms:
                 cout << "- Nhap ma sinh vien moi: ";
                 cin >> MSV;
@@ -1165,13 +1183,20 @@ public:
              << center(students[i].getKhoa(), 10) << " | "
              << center(students[i].getDate_of_Birth(), 15) << "\n";
     }
-    static bool cmp_student_to_name(BanDoc &a, BanDoc &b)
+    static bool cmp_student_to_name(BanDoc &a,BanDoc &b)
     {
         return convertv2(a.getHoTen()) < convertv2(b.getHoTen());
     }
     void arrange_student_name(vector<BanDoc> &students)
     {
         sort(students.begin(), students.end(), cmp_student_to_name);
+        outputData_BanDoc_File(students);
+    }
+    static bool cmp_student_to_majors(BanDoc &a,BanDoc &b){
+        return a.getNganhHoc() < b.getNganhHoc();
+    }
+    void arrange_student_majors(vector<BanDoc> &students){
+        sort(students.begin(), students.end(), cmp_student_to_majors);
         outputData_BanDoc_File(students);
     }
     void search_student_to_id(vector<BanDoc> &students)
@@ -1217,6 +1242,7 @@ public:
         // Quản lý theo mã sinh viên và mã sách
         cout << "\t\t[!] : Nhap N de thoat.\n\n";
         string nMS = ""; // mã sách
+        int check;
         while (true)
         {
             cout << "- Nhap ma sach: ";
@@ -1232,13 +1258,18 @@ public:
                 cout << "Ban chon thoat !\n";
                 return;
             }
-            else if (kiemTraSach_DuTieuChuanMuon(books, nMS))
+            check = kiemTraSach_DuTieuChuanMuon(books, nMS);
+            if (check == 1)
             {
                 break;
             }
+            else if(check == 2) {
+                cout << "\t\tSach hien dang co ban doc khac muon.\n";
+                continue;
+            }
             else
             {
-                cout << "\t\tMa sach khong ton tai! hoac dang co ban doc muon.\n";
+                cout << "\t\tMa sach khong ton tai!.\n";
                 continue;
             }
         }
@@ -1294,12 +1325,13 @@ public:
         }
         PhieuMuon pm(0, nMSV, nMS, standardization(name_students_borrow_pay));
         borrow_pay.push_back(pm);
-        time_t t = time(0);
-        struct tm *Now = localtime(&t);
         cout << "______________________________________\n";
         cout << "\t\tYeu cau cua ban dang duoc thuc hien!\n";
-        cout << "\t\tThoi gian: " << Now->tm_hour << ":" << Now->tm_min << ":" << Now->tm_sec << endl;
-        cout << "\t\tNgay: " << Now->tm_mday << "/" << Now->tm_mon + 1 << "/" << Now->tm_year + 1900 << endl;
+        cout << "\t\tMSV: " << nMSV << endl;
+        cout << "\t\tHo ten: " << name_students_borrow_pay << endl;
+        cout << "\t\tMa sach: " << nMS << endl;
+        cout << "\t\tThoi gian: " << get_time() << endl;
+        cout << "\t\tNgay: " << get_day() << endl;
         cout << "\t\tTao phieu muon thanh cong!\n";
         cout << "______________________________________\n";
         ofstream File;
@@ -1329,16 +1361,18 @@ public:
         }
         outputData_Sach_File(books);
     }
-    bool kiemTraSach_DuTieuChuanMuon(vector<Sach> &books, string MS)
+    int kiemTraSach_DuTieuChuanMuon(vector<Sach> &books, string MS)
     {
         for (int i = 0; i < books.size(); ++i)
         {
-            if (books[i].getMaSach() == MS && books[i].getQuantity() > 0)
-            {
-                return true;
+            if (books[i].getMaSach() == MS)
+            {   
+                if(books[i].getQuantity() > 0)
+                    return 1;
+                else return 2;
             }
         }
-        return false;
+        return 0;
     }
     void outputData_PhieuMuon_File(vector<PhieuMuon> &borrow_pay)
     {
@@ -1426,11 +1460,11 @@ public:
         cout << "\t\tTra sach" << endl;
         cout << "[!] : Nhap N de thoat.\n\n";
         string msv, ms, name;
-        int ok = 0;
+        int check = -1;
     xmsv:
         cout << "- Nhap ma sinh vien: ";
         getline(cin, msv);
-        if (msv == "N")
+        if (msv == "N" || msv == "n")
         {
             cout << "\n===========================\n";
             cout << "\t\tBan chon thoat!\n";
@@ -1438,24 +1472,31 @@ public:
         }
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
-            if (borrow_pay[i].getMSV() == msv)
+            if (check == -1 && borrow_pay[i].getMSV() == msv)
             {
-                ok = i;
-                goto xname;
+                check = i;
+                cout << center("STT", 5) << " | "
+                     << center("Ho Ten", 25) << " | "
+                     << center("Ma sinh vien", 25) << " | "
+                     << center("Ma sach", 15) << " | "
+                     << center("Ngay muon", 14) << " | "
+                     << center("Ngay tra", 12) << "\n";
             }
+            if(borrow_pay[i].getMSV() == msv) xuat_thongtin1phieumuon(borrow_pay, i);
         }
+        if(check != -1) goto xname;
         cout << "- Khong co ma sinh vien nao nhu vay da muon sach!\nNhap lai:\n";
         goto xmsv;
     xname:
         cout << "- Nhap ten sinh vien: ";
         getline(cin, name);
-        if (name == "N")
+        if (name == "N" || name == "n")
         {
             cout << "\n===========================\n";
             cout << "\t\tBan chon thoat!\n";
             return;
         }
-        if (borrow_pay[ok].getname_students() == standardization(name))
+        if (borrow_pay[check].getname_students() == standardization(name))
         {
             goto xms;
         }
@@ -1464,20 +1505,20 @@ public:
     xms:
         cout << "- Nhap ma sach: ";
         cin >> ms;
-        if (ms == "N")
+        if (ms == "N" || ms == "n")
         {
             cout << "\n===========================\n";
             cout << "\t\tBan chon thoat!\n";
             return;
         }
-        if (borrow_pay[ok].getMaSach() == ms)
+        if (borrow_pay[check].getMaSach() == ms)
         {
             goto done;
         }
         cout << "- Nhap sai ma sach duoc muon!\nNhap lai:\n";
         goto xms;
     done:
-        borrow_pay.erase(borrow_pay.begin() + ok);
+        borrow_pay.erase(borrow_pay.begin() + check);
 
         for (int i = 0; i < books.size(); ++i)
         {
@@ -1597,7 +1638,7 @@ public:
         do
         {
             system("cls");
-            cout << "========================MENU 1===========================\n";
+            cout << "======================= MENU 1 ==========================\n";
             cout << "==                                                     ==\n";
             cout << "==        1.Them mot cuon sach.                        ==\n";
             cout << "==        2.Sua thong tin sach.                        ==\n";
@@ -1650,7 +1691,7 @@ public:
         do
         {
             system("cls");
-            cout << "========================MENU 2===========================\n";
+            cout << "======================= MENU 2 ==========================\n";
             cout << "==                                                     ==\n";
             cout << "==        1.Muon sach                                  ==\n";
             cout << "==        2.Tra sach                                   ==\n";
@@ -1702,7 +1743,7 @@ public:
         do
         {
             system("cls");
-            cout << "========================MENU 3===============================\n";
+            cout << "======================= MENU 3 ==============================\n";
             cout << "==                                                         ==\n";
             cout << "==        1.Them mot ban doc.                              ==\n";
             cout << "==        2.Sua thong tin ban doc.                         ==\n";
@@ -1754,41 +1795,47 @@ public:
         do
         {
             system("cls");
-            cout << "========================MENU 4===========================\n";
-            cout << "==                                                     ==\n";
-            cout << "==        1.Sap xep sach theo gia tien tang dan.       ==\n";
-            cout << "==        2.Sap xep sach theo name alphabet.           ==\n";
-            cout << "==        3.Sap xep danh sach cac ban doc theo name.   ==\n";
-            cout << "==        4.Exit.                                      ==\n";
-            cout << "=========================================================\n";
+            cout << "========================== MENU 4 =============================\n";
+            cout << "==                                                           ==\n";
+            cout << "==        1.Sap xep sach theo gia tien tang dan.             ==\n";
+            cout << "==        2.Sap xep sach theo name sach tang dan.            ==\n";
+            cout << "==        3.Sap xep danh sach cac ban doc theo nganh.        ==\n";
+            cout << "==        4.Sap xep cac ban doc theo thu tu alphabet.        ==\n";
+            cout << "==        5.Exit.                                            ==\n";
+            cout << "===============================================================\n";
             cout << "=> Moi chon chuc nang: ";
             cin >> chon;
             cout << "=========================" << endl;
             switch (chon)
             {
             case 1:
-                cout << "[1] : Sap xep sach theo gia tien\n";
+                cout << "[1] : Sap xep sach theo thu tu tang dan gia tien\n";
                 _books.arrange_book_amount(books);
                 cout << "\nDone sap xep sach theo ma!\n";
                 break;
             case 2:
-                cout << "[2] : Sap xep sach theo name alphabet\n";
+                cout << "[2] : Sap xep sach theo thu tu tang dan ten sach\n";
                 _books.arrange_book_name(books);
                 cout << "\nDone sap xep sach theo name!\n";
                 break;
             case 3:
-                cout << "[3] : Sap xep cac ban doc theo name alphabet\n";
+                cout << "[3] : Sap xep cac ban doc theo nganh\n";
+                _students.arrange_student_majors(students);
+                cout << "\nDone sap xep ban doc theo nganh!\n";
+                break;
+            case 4:
+                cout << "[4] : Sap xep cac ban doc theo thu tu alphabet tang dan theo ten + ho\n";
                 _students.arrange_student_name(students);
                 cout << "\nDone sap xep ban doc theo name!\n";
                 break;
-            case 4:
-                cout << "[4] : Exit\n";
+            case 5:
+                cout << "[5] : Exit\n";
                 return;
             default:
                 cout << "\t\tNhap sai lua chon!\n";
                 break;
             }
-            if (chon != 4)
+            if (chon != 5)
             {
                 cout << endl;
                 cout << "=========================" << endl;
@@ -1796,7 +1843,7 @@ public:
                 cin.ignore();
                 cin.get();
             }
-        } while (chon != 4);
+        } while (chon != 5);
     }
     void menu5()
     {
@@ -1804,7 +1851,7 @@ public:
         do
         {
             system("cls");
-            cout << "========================MENU 5===========================\n";
+            cout << "======================= MENU 5 ==========================\n";
             cout << "==                                                     ==\n";
             cout << "==        1.Tim kiem sach theo ma sach                 ==\n";
             cout << "==        2.Tim kiem sach theo name                    ==\n";
@@ -1867,7 +1914,7 @@ public:
         do
         {
             system("cls");
-            cout << "========================MENU 6===========================\n";
+            cout << "======================= MENU 6 ==========================\n";
             cout << "==                                                     ==\n";
             cout << "==        1.Thong ke so sinh vien trong thu vien.      ==\n";
             cout << "==        2.Thong ke so dau sach trong thu vien.       ==\n";
@@ -1910,7 +1957,7 @@ public:
             }
         } while (chon != 4);
     }
-    void menu()
+    void menu_admin()
     {
         _books.readinputData_Sach(books);
         _borrowPay.inputData_PhieuMuon(borrow_pay);
@@ -1919,8 +1966,9 @@ public:
         do
         {
             system("cls");
+            flagv2 = false;
             cout << "\t     Chuong Trinh Quan Ly Thu Vien." << endl;
-            cout << "========================MENU=============================\n";
+            cout << "====================== MENU ADMIN =======================\n";
             cout << "==                                                     ==\n";
             cout << "==        1.Quan ly sach.                              ==\n";
             cout << "==        2.Quan ly phieu muon sach.                   ==\n";
@@ -1937,30 +1985,37 @@ public:
             switch (chon)
             {
             case 1:
+                flagv2 = true;
                 cout << "[1] : Quan ly sach\n";
                 menu1();
                 break;
             case 2:
+                flagv2 = true;
                 cout << "[2] : Quan ly phieu muon sach\n";
                 menu2();
                 break;
             case 3:
+                flagv2 = true;
                 cout << "[3] : Quan ly danh sach ban doc trong thu vien\n";
                 menu3();
                 break;
             case 4:
+                flagv2 = true;
                 cout << "[4] : Sap xep sach\n";
                 menu4();
                 break;
             case 5:
+                flagv2 = true;
                 cout << "[5] : Tim kiem sach\n";
                 menu5();
                 break;
             case 6:
+                flagv2 = true;
                 cout << "[6] : Thong ke\n";
                 menu6();
                 break;
             case 7:
+                flagv2 = true;
                 cout << "[7] : Thoat\n";
                 cout << "\n\t\tXin chao va hen gap lai !\n";
                 break;
@@ -1968,7 +2023,7 @@ public:
                 cout << "\t\tNhap sai lua chon!\n";
                 break;
             }
-            if (chon != 7)
+            if (chon != 7 && flagv2 == false)
             {
                 cout << endl;
                 cout << "=========================" << endl;
@@ -1978,7 +2033,7 @@ public:
             }
         } while (chon != 7);
     }
-    void menuv2(string username, string password)
+    void menu_user(string username, string password, string fullname)
     {
         _books.readinputData_Sach(books);
         _borrowPay.inputData_PhieuMuon(borrow_pay);
@@ -1988,10 +2043,11 @@ public:
         {
             system("cls");
             cout << "\t     Chuong Trinh Quan Ly Thu Vien." << endl;
+            cout << "  Hello : " << fullname << endl;
             int cnt_phieuquanhan = _borrowPay.check_phieuquahan_motsinhvien(borrow_pay, username);
             if (cnt_phieuquanhan)
                 cout << "[Warning] : Ban co " << cnt_phieuquanhan << " quyen sach chua tra cho thu vien!\n";
-            cout << "========================MENU=============================\n";
+            cout << "====================== MENU USER ========================\n";
             cout << "==                                                     ==\n";
             cout << "==        1.In toan bo sach co trong thu vien.         ==\n";
             cout << "==        2.Muon sach.                                 ==\n";
@@ -2062,11 +2118,13 @@ public:
     bool checkuser(string username, string password, string filetxt)
     {
         string usernamev2, passwordv2;
+        string fullname;
         ifstream File(filetxt);
         while (!File.eof())
         {
             getline(File, usernamev2, ' ');
-            getline(File, passwordv2, '\n');
+            getline(File, passwordv2, ' ');
+            getline(File, fullname, '\n');
             if (usernamev2 == username && passwordv2 == password)
             {
                 return true;
@@ -2099,7 +2157,7 @@ public:
             cout << "\t\tKhong duoc de trong. Nhap lai!\n";
             goto name;
         }
-        else if (username == "T")
+        else if (username == "T" || username == "t")
         {
             int chon;
             do
@@ -2112,8 +2170,8 @@ public:
                 cout << "\t\t"
                      << "+---------------+" << endl;
                 cout << endl;
-                cout << "1. Login\n";
-                cout << "2. Signup\n";
+                cout << "1. LOGIN\n";
+                cout << "2. SIGNUP\n";
                 cout << "Moi chon chuc nang: ";
                 cin >> chon;
                 if (chon == 1)
@@ -2135,11 +2193,11 @@ public:
                 }
             } while (chon != 1 && chon != 2);
         }
-        if (ok || ok2)
+        if (ok || ok2)// nếu đã vào menu rồi mà quay về đây thì chắc chắn là bạn đã chọn chức năng thoát
             return;
         else if (username.length() < 8)
         {
-            cout << "\t\tUsername phai co 8 tu tro len. Nhap lai!\n";
+            cout << "\t\tUsername phai co 8 ky tu tro len. Nhap lai!\n";
             goto name;
         }
 
@@ -2151,7 +2209,7 @@ public:
             cout << "\t\tKhong duoc de trong. Nhap lai!\n";
             goto pass;
         }
-        else if (username == "T")
+        else if (username == "T" || username == "t")
         {
             int chon;
             do
@@ -2164,8 +2222,8 @@ public:
                 cout << "\t\t"
                      << "+---------------+" << endl;
                 cout << endl;
-                cout << "1. Login\n";
-                cout << "2. Signup\n";
+                cout << "1. LOGIN\n";
+                cout << "2. SIGNUP\n";
                 cout << "Moi chon chuc nang: ";
                 cin >> chon;
                 if (chon == 1)
@@ -2181,11 +2239,11 @@ public:
                 }
             } while (chon != 1 && chon != 2);
         }
-        if (ok || ok2)
+        if (ok || ok2) // nếu đã vào menu rồi mà quay về đây thì chắc chắn là bạn đã chọn chức năng thoát
             return;
         else if (password.length() < 8)
         {
-            cout << "\t\tPassword phai co 8 tu tro len. Nhap lai!\n";
+            cout << "\t\tPassword phai co 8 ky tu tro len. Nhap lai!\n";
             goto pass;
         }
 
@@ -2193,7 +2251,7 @@ public:
         {
             cout << "\n\t\tDang nhap thanh cong!";
             flag = true;
-            menu();
+            menu_admin();
         }
         else
         {
@@ -2236,13 +2294,14 @@ public:
     }
     bool valid_account(string username, string password)
     {
-        string usernamev2, passwordv2;
+        string usernamev2, passwordv2, fullname;
         ifstream File("databasev2.txt");
         while (!File.eof())
         {
             getline(File, usernamev2, ' ');
-            getline(File, passwordv2, '\n');
-            if (usernamev2 == username)
+            getline(File, passwordv2, ' ');
+            getline(File, fullname, '\n');
+            if (usernamev2 == username)// chỉ check tài khoản
             {
                 return true;
             }
@@ -2253,7 +2312,7 @@ public:
     void user_register()
     {
 
-        string username, password;
+        string username, password, fullname;
     front:
         system("cls");
         cout << "\t\t"
@@ -2263,7 +2322,7 @@ public:
         cout << "\t\t"
              << "+----------------------+" << endl;
     name:
-        cout << "- Nhap username: ";
+        cout << "- Nhap username (Ma sinh vien): ";
         cin >> username;
         if (username == "")
         {
@@ -2272,7 +2331,7 @@ public:
         }
         else if (username.length() < 8)
         {
-            cout << "\t\tUsername phai co 8 tu tro len. Nhap lai!\n";
+            cout << "\t\tUsername phai co 8 ky tu tro len. Nhap lai!\n";
             goto name;
         }
     pass:
@@ -2285,14 +2344,29 @@ public:
         }
         else if (password.length() < 8)
         {
-            cout << "\t\tPassword phai co 8 tu tro len. Nhap lai!\n";
+            cout << "\t\tPassword phai co 8 ky tu tro len. Nhap lai!\n";
             goto pass;
         }
         if (!valid_account(username, password))
         {
+            cin.ignore();
+        fulln:
+            cout << "- Nhap ten cua ban: ";
+            getline(cin, fullname);
+            if (fullname == "")
+            {
+                cout << "\t\tKhong duoc de trong. Nhap lai!\n";
+                goto fulln;
+            }
+            else if (fullname.length() < 8)
+            {
+                cout << "\t\tFullname phai co 8 ky tu tro len. Nhap lai!\n";
+                goto fulln;
+            }
+            fullname = standardization(fullname);
             ofstream File("databasev2.txt", ios::app);
             File << "\n"
-                 << username << " " << password;
+                 << username << " " << password << " " << fullname;
             File.close();
             cout << endl
                  << "\t\tDang ky thanh cong!" << endl;
@@ -2300,13 +2374,14 @@ public:
             cin.ignore();
             cin.get();
             ok = true;
-            menuv2(username, password);
+            menu_user(username, password, fullname);
             return;
         }
         else
         {
             int chon;
             cout << "\n\t\tTai khoan da ton tai!\n";
+            cout << "__________________________________" << endl;
             do
             {
                 cout << "1. Dang ky.\n";
@@ -2341,7 +2416,7 @@ public:
              << "|     Login User     |" << endl;
         cout << "\t\t"
              << "+--------------------+" << endl;
-        cout << "\t\t[!] : Nhap R de dang ky tai khoan" << endl;
+        cout << "\t[!] : Nhap R de dang ky tai khoan" << endl;
     name:
         cout << "- Nhap username: ";
         cin >> username;
@@ -2350,7 +2425,7 @@ public:
             cout << "\t\tKhong duoc de trong. Nhap lai!\n";
             goto name;
         }
-        else if (username == "R")
+        else if (username == "R" || username == "r")
         {
             user_register();
         }
@@ -2358,7 +2433,7 @@ public:
             return;
         else if (username.length() < 8)
         {
-            cout << "\t\tUsername phai co 8 tu tro len. Nhap lai!\n";
+            cout << "\t\tUsername phai co 8 ky tu tro len. Nhap lai!\n";
             goto name;
         }
     pass:
@@ -2369,23 +2444,40 @@ public:
             cout << "\t\tKhong duoc de trong. Nhap lai!\n";
             goto pass;
         }
-        else if (password == "R")
+        else if (password == "R" || password == "r")
             user_register();
         if (ok)
             return;
         else if (password.length() < 8)
         {
-            cout << "\t\tPassword phai co 8 tu tro len. Nhap lai!\n";
+            cout << "\t\tPassword phai co 8 ky tu tro len. Nhap lai!\n";
             goto pass;
         }
-        if (checkuser(username, password, "databasev2.txt"))
+        // nhập đúng định dạng xong thì đến bước check data
+        bool check = false;
+        string usernamev2, passwordv2;
+        string fullname;
+        ifstream File("databasev2.txt");
+        while (!File.eof())
+        {
+            getline(File, usernamev2, ' ');
+            getline(File, passwordv2, ' ');
+            getline(File, fullname, '\n');
+            if (usernamev2 == username && passwordv2 == password)
+            {
+                check = true;
+                break;
+            }
+        }
+        File.close();
+        if (check)
         {
             cout << "\n\t\tDang nhap thanh cong!\n";
             cout << "=> Nhan Enter de den trang chu !";
             cin.ignore();
             cin.get();
             ok2 = true;
-            menuv2(username, password);
+            menu_user(username, password, standardization(fullname));
         }
         else
         {
