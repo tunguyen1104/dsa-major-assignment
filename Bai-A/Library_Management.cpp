@@ -1,115 +1,131 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define endl "\n"
-bool flag = false; // check xem web đang ở tư cách admin hay người dùng
-bool flagv2 = false;// check đã vào các mục menu con hay chưa, nếu vào rồi mà ra đây thì trước đó đã bấm Exit
-bool ok2 = false;  // check xem da dang nhap vao web hay chua
-bool ok = false;   // check dang ky
-/*! Kẻ bảng, căn giữa chuỗi */
-string center(const string s, const int width)
+bool flag = false;   // check xem web đang ở tư cách admin hay người dùng
+bool flagv2 = false; // check đã vào các mục menu con hay chưa, nếu vào rồi mà ra đây thì trước đó đã bấm Exit
+bool ok2 = false;    // check xem da dang nhap vao web hay chua
+bool ok = false;     // check dang ky
+class StringManipulator
 {
-    stringstream ss, spaces;
-    int padding = width - s.size(); // đếm phần thừa để căn
-    for (int i = 0; i < padding / 2; ++i)
-        spaces << " ";
-    ss << spaces.str() << s << spaces.str(); // format with padding
-    if (padding > 0 && padding % 2 != 0)     // nếu padding là số lẻ thì thêm 1 dấu cách vào sau cùng ss.
-        ss << " ";
-    return ss.str();
-}
-int size_number(int s)
-{
-    int cnt = 0;
-    while (s > 0)
+public:
+    /*! Kẻ bảng, căn giữa chuỗi */
+    string center(const string s, const int width)
     {
-        s /= 10;
-        ++cnt;
+        stringstream ss, spaces;
+        int padding = width - s.size(); // đếm phần thừa để căn
+        for (int i = 0; i < padding / 2; ++i)
+            spaces << " ";
+        ss << spaces.str() << s << spaces.str(); // format with padding
+
+        // nếu padding là số lẻ thì thêm 1 dấu cách vào sau cùng ss.
+        if (padding > 0 && padding % 2 != 0)
+            ss << " ";
+        return ss.str();
     }
-    return cnt;
-}
-// nếu data là số
-string centerv2(const int s, const int width)
-{
-    stringstream ss, spaces;
-    int padding = width - size_number(s);
-    for (int i = 0; i < padding / 2; ++i)
-        spaces << " ";
-    ss << spaces.str() << s << spaces.str();
-    if (padding > 0 && padding % 2 != 0)
-        ss << " ";
-    return ss.str();
-}
-// chuẩn hoá tên---------------------------------
-string convert(string s)
-{
-    s[0] = toupper(s[0]);
-    for (int i = 1; i < s.size(); ++i)
+
+    int size_number(int s) // tìm số lượng chữ số của s
     {
-        s[i] = tolower(s[i]);
+        int cnt = 0;
+        while (s > 0)
+        {
+            s /= 10;
+            ++cnt;
+        }
+        return cnt;
     }
-    return s;
-}
-string standardization(string s1) // in hoa các chữ cái đầu của tên và in thường các chữ còn lại vd: hOAng dinh NAm -> Hoang Dinh Nam
-{
-    stringstream ss(s1);
-    vector<string> res;
-    string tmp;
-    while (ss >> tmp)
+
+    // nếu data là số
+    string centerv2(const int s, const int width)
     {
-        res.push_back(tmp);
+        stringstream ss, spaces;
+        int padding = width - size_number(s);
+        for (int i = 0; i < padding / 2; ++i)
+            spaces << " ";
+        ss << spaces.str() << s << spaces.str();
+        if (padding > 0 && padding % 2 != 0)
+            ss << " ";
+        return ss.str();
     }
-    string key = "";
-    for (int i = 0; i < res.size() - 1; ++i)
+
+    string convert(string s)
     {
-        key += convert(res[i]) + " ";
+        s[0] = toupper(s[0]);
+        for (int i = 1; i < s.size(); ++i)
+        {
+            s[i] = tolower(s[i]);
+        }
+        return s;
     }
-    key += convert(res[res.size() - 1]);
-    return key;
-}
-string convertv2(string s) // vd: hoang dinh nam -> namhoangdinh
-{
-    stringstream ss(s);
-    string tmp;
-    vector<string> res;
-    while (ss >> tmp)
+
+    string standardization(string s1)
     {
-        res.push_back(tmp);
+        stringstream ss(s1); // Khởi tạo stringstream từ xâu s1
+        vector<string> res;
+        string tmp;
+        // Đọc lần lượt các phần của xâu. Các phần tách nhau bởi dấu cách
+        while (ss >> tmp)
+        {
+            res.push_back(tmp);
+        }
+        string key = "";
+        for (int i = 0; i < res.size() - 1; ++i)
+        {
+            key += convert(res[i]) + " ";
+        }
+        key += convert(res[res.size() - 1]);
+        return key;
     }
-    tmp = "";
-    tmp += res[res.size() - 1];
-    for (int i = 0; i < res.size() - 1; ++i)
+
+    string convertv2(string s)
     {
-        tmp += res[i];
+        stringstream ss(s);
+        string tmp;
+        vector<string> res;
+        while (ss >> tmp)
+        {
+            res.push_back(tmp);
+        }
+        tmp = "";
+        tmp += res[res.size() - 1];
+        for (int i = 0; i < res.size() - 1; ++i)
+        {
+            tmp += res[i];
+        }
+        return tmp;
     }
-    return tmp;
-}
-string convert_date(string s) // vd: 5/7/2023 -> 05/07/2023
-{
-    if (s[2] != '/')
-        s = "0" + s;
-    if (s[5] != '/')
-        s.insert(3, "0");
-    return s;
-}
-string convert_datev2(int day, int month, int year)
-{
-    string s;
-    s += to_string(day) + "/" + to_string(month) + "/" + to_string(year);
-    return convert_date(s);
-}
-//lấy thời gian thực-----------------------------
-string get_time()
-{
-	time_t now = time(0);
-	tm *ltm = localtime(&now);
-	return to_string(ltm->tm_hour) + ":" + to_string(ltm->tm_min) + ":" + to_string(ltm->tm_sec);
-}
-string get_day()
-{
-	time_t now = time(0);
-	tm *ltm = localtime(&now);
-	return convert_date(to_string(ltm->tm_mday) + "/" + to_string(1 + ltm->tm_mon) + "/" + to_string(1900 + ltm->tm_year));
-}
+
+    string convert_date(string s)
+    {
+        if (s[2] != '/')
+            s = "0" + s;
+        if (s[5] != '/')
+            s.insert(3, "0");
+        return s;
+    }
+
+    string convert_datev2(int day, int month, int year)
+    {
+        string s;
+        s += to_string(day) + "/" + to_string(month) + "/" + to_string(year);
+        return convert_date(s);
+    }
+
+    // lấy thời gian thực-----------------------------
+    string get_time()
+    {
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        return to_string(ltm->tm_hour) + ":" + to_string(ltm->tm_min) + ":" + to_string(ltm->tm_sec);
+    }
+
+    string get_day()
+    {
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        return convert_date(to_string(ltm->tm_mday) + "/" + to_string(1 + ltm->tm_mon) +
+                            "/" + to_string(1900 + ltm->tm_year));
+    }
+};
 //------------------------------------------------
 class Date
 {
@@ -125,44 +141,38 @@ public:
         this->month = month;
         this->year = year;
     }
-    void setNgay(int);
-    void setThang(int);
-    void setNam(int);
-    int getNgay();
-    int getThang();
-    int getNam();
-    void xuat();
-    ~Date(void){};
+    void setNgay(int d)
+    {
+        this->day = d;
+    }
+    void setThang(int m)
+    {
+        this->month = m;
+    }
+    void setNam(int y)
+    {
+        this->year = y;
+    }
+    int getNgay()
+    {
+        return this->day;
+    }
+    int getThang()
+    {
+        return this->month;
+    }
+    int getNam()
+    {
+        return this->year;
+    }
+    void xuat()
+    {
+        cout << this->day << "/" << this->month << "/" << this->year;
+    }
+    ~Date(){};
 };
-void Date::setNgay(int d)
-{
-    this->day = d;
-}
-void Date::setThang(int m)
-{
-    this->month = m;
-}
-void Date::setNam(int y)
-{
-    this->year = y;
-}
-int Date::getNgay()
-{
-    return this->day;
-}
-int Date::getThang()
-{
-    return this->month;
-}
-int Date::getNam()
-{
-    return this->year;
-}
-void Date::xuat()
-{
-    cout << this->day << "/" << this->month << "/" << this->year;
-}
-class Sach
+
+class Sach : public StringManipulator
 {
 private:
     string MaSach;
@@ -186,90 +196,73 @@ public:
         this->quantity = quantity;
     }
     ~Sach(){};
-    void setMaSach(string);
-    void setTenSach(string);
-    void setTheLoai(string);
-    void setTacGia(string);
-    void setNamXuatBan(int);
-    void setAmount(int);
-    void setQuantity(int);
-    string getMaSach();
-    string getTenSach();
-    string getTheLoai();
-    string getTacGia();
-    int getNamXuatBan();
-    int getAmount();
-    int getQuantity();
+    void setMaSach(string Ma)
+    {
+        MaSach = Ma;
+    }
+
+    void setTenSach(string Ten)
+    {
+        TenSach = Ten;
+    }
+
+    void setTheLoai(string Loai)
+    {
+        TheLoai = Loai;
+    }
+
+    void setTacGia(string TG)
+    {
+        TacGia = TG;
+    }
+
+    void setNamXuatBan(int NXB)
+    {
+        this->NamXuatBan = NXB;
+    }
+    void setAmount(int amount)
+    {
+        this->amount = amount;
+    }
+    void setQuantity(int quantity)
+    {
+        this->quantity = quantity;
+    }
+    string getMaSach()
+    {
+        return MaSach;
+    }
+
+    string getTenSach()
+    {
+        return standardization(TenSach);
+    }
+
+    string getTheLoai()
+    {
+        return standardization(TheLoai);
+    }
+
+    string getTacGia()
+    {
+        return TacGia;
+    }
+
+    int getNamXuatBan()
+    {
+        return NamXuatBan;
+    }
+    int getAmount()
+    {
+        return amount;
+    }
+    int getQuantity()
+    {
+        return quantity;
+    }
 };
-
-void Sach ::setMaSach(string Ma)
-{
-    MaSach = Ma;
-}
-
-void Sach ::setTenSach(string Ten)
-{
-    TenSach = Ten;
-}
-
-void Sach ::setTheLoai(string Loai)
-{
-    TheLoai = Loai;
-}
-
-void Sach ::setTacGia(string TG)
-{
-    TacGia = TG;
-}
-
-void Sach ::setNamXuatBan(int NXB)
-{
-    this->NamXuatBan = NXB;
-}
-void Sach ::setAmount(int amount)
-{
-    this->amount = amount;
-}
-void Sach ::setQuantity(int quantity)
-{
-    this->quantity = quantity;
-}
-string Sach ::getMaSach()
-{
-    return MaSach;
-}
-
-string Sach ::getTenSach()
-{
-    return standardization(TenSach);
-}
-
-string Sach ::getTheLoai()
-{
-    return standardization(TheLoai);
-}
-
-string Sach ::getTacGia()
-{
-    return TacGia;
-}
-
-int Sach ::getNamXuatBan()
-{
-    return NamXuatBan;
-}
-int Sach ::getAmount()
-{
-    return amount;
-}
-int Sach ::getQuantity()
-{
-    return quantity;
-}
-//-------------------------------------------------------------------------------------------------
-
 //-----------------------------------------------------------------------------------------------
-class BanDoc
+class BanDoc : public StringManipulator
 {
 private:
     string MSV;
@@ -289,66 +282,55 @@ public:
         this->date_of_birth = date_of_birth;
     }
     ~BanDoc() {}
-    void setMSV(string);
-    void setHoTen(string);
-    void setNganhHoc(string);
-    void setKhoa(string);
     void setDay(string date_of_birth)
     {
         this->date_of_birth = date_of_birth;
     }
-    string getMSV();
-    string getHoTen();
-    string getNganhHoc();
-    string getKhoa();
+    void setKhoa(string Khoa)
+    {
+        this->Khoa = Khoa;
+    }
+    void setMSV(string msv)
+    {
+        MSV = msv;
+    }
+
+    void setHoTen(string hoten)
+    {
+        HoTen = hoten;
+    }
+
+    void setNganhHoc(string nganhhoc)
+    {
+        NganhHoc = nganhhoc;
+    }
+
+    string getMSV()
+    {
+        return MSV;
+    }
+
+    string getHoTen()
+    {
+        return standardization(HoTen);
+    }
+
+    string getNganhHoc()
+    {
+        return NganhHoc;
+    }
+    string getKhoa()
+    {
+        return Khoa;
+    }
     string getDate_of_Birth()
     {
         return convert_date(date_of_birth);
     }
 };
-void BanDoc ::setKhoa(string Khoa)
-{
-    this->Khoa = Khoa;
-}
-void BanDoc ::setMSV(string msv)
-{
-    MSV = msv;
-}
-
-void BanDoc ::setHoTen(string hoten)
-{
-    HoTen = hoten;
-}
-
-void BanDoc ::setNganhHoc(string nganhhoc)
-{
-    NganhHoc = nganhhoc;
-}
-
-string BanDoc ::getMSV()
-{
-    return MSV;
-}
-
-string BanDoc ::getHoTen()
-{
-    return standardization(HoTen);
-}
-
-string BanDoc ::getNganhHoc()
-{
-    return NganhHoc;
-}
-string BanDoc ::getKhoa()
-{
-    return Khoa;
-}
 //----------------------------------------------------------------------------------------
 class PhieuMuon : public BanDoc, public Sach, public Date
 {
-private:
-    string name_students_borrow_pay;
-
 public:
     Date xNgayMuon, xNgayTra;
     // Các hàm xử lí chuẩn ngày
@@ -356,20 +338,15 @@ public:
     int nThangPlus(int nN);
     int nNamPlus(int nN);
     bool ktrNamNhuan();
-    void setname_students(string name_students_borrow_pay)
-    {
-        this->name_students_borrow_pay = name_students_borrow_pay;
-    }
-    string getname_students()
-    {
-        return standardization(name_students_borrow_pay);
-    }
+
     // constructor này dùng để đọc file PhieuMuon.txt,nếu dùng constructor bên dưới thì day month year trong file sẽ bị đổi thành thời gian thực
-    PhieuMuon(string MSV = "", string MS = "", string name_students_borrow_pay = "", int a = 0, int b = 0, int c = 0, int d = 0, int e = 0, int f = 0) : BanDoc(MSV), Sach(MS), xNgayMuon(a, b, c), xNgayTra(d, e, f)
+
+    PhieuMuon(string MSV = "", string MS = "", string name_students_borrow_pay = "", int a = 0, int b = 0,
+              int c = 0, int d = 0, int e = 0, int f = 0) : BanDoc(MSV, name_students_borrow_pay), Sach(MS), xNgayMuon(a, b, c), xNgayTra(d, e, f)
     {
-        this->name_students_borrow_pay = name_students_borrow_pay;
     }
-    PhieuMuon(int cnt = 0, string MSV = "", string MS = "", string name_students_borrow_pay = "") : BanDoc(MSV), Sach(MS)
+
+    PhieuMuon(int cnt = 0, string MSV = "", string MS = "", string name_students_borrow_pay = "") : BanDoc(MSV, name_students_borrow_pay), Sach(MS)
     {
         time_t t = time(0);
         struct tm *Now = localtime(&t);
@@ -380,8 +357,8 @@ public:
         xNgayTra.setNgay(nNgayPlus(7));
         xNgayTra.setThang(nThangPlus(7));
         xNgayTra.setNam(nNamPlus(7));
-        this->name_students_borrow_pay = name_students_borrow_pay;
     }
+
     ~PhieuMuon(){};
 };
 int PhieuMuon::nNgayPlus(int nN)
@@ -481,15 +458,36 @@ bool PhieuMuon::ktrNamNhuan()
         return false;
 }
 //----------------------------------------------------------------------
-class List_Books
+class List_Books : public StringManipulator
 {
-private:
-    vector<Sach> books;
-
 public:
     void ThemSach(vector<Sach> &books)
     {
+        int chon, index = 0;
         cout << "\t\tNhap them mot cuon sach" << endl;
+        cout << "1.Them vao dau." << endl;
+        cout << "2.Them vao giua." << endl;
+        cout << "3.Them vao cuoi" << endl;
+        cout << "_____________________________" << endl;
+
+        do
+        {
+            cout << "Ban chon chuc nang: ";
+            cin >> chon;
+            if (chon < 1 || chon > 3)
+                cout << "\tKhong co chuc nang nay, moi ban nhap lai!" << endl;
+        } while (chon < 1 || chon > 3);
+
+        if (chon == 2)
+        {
+            do
+            {
+                cout << "Nhap vi tri ban muon them vao: ";
+                cin >> index;
+                if (index < 0 || index > books.size())
+                cout << "\tKhong ton tai vi tri day, moi ban nhap lai!" << endl;
+            } while (index < 0 || index > books.size());
+        }
         cout << endl;
         string MS, Ten, Loai, TG;
         int NXB;
@@ -564,23 +562,19 @@ public:
         cout << "- Nhap so luong cuon sach them vao: ";
         cin >> quantity;
         Sach New(MS, Ten, Loai, TG, NXB, amount, quantity);
-        books.push_back(New);
-        // Không có file outputData_Sach_File vì ?
-        ofstream File;
-        File.open("Sach.txt", ios::app);
-        int i = books.size() - 1;
-        if (i == 0)
+        if (chon == 3)
+            books.push_back(New);
+        else if (chon == 2)
         {
-            File
-                << books[i].getMaSach() << "," << books[i].getTenSach() << "," << books[i].getTheLoai() << ","
-                << books[i].getTacGia() << "," << books[i].getNamXuatBan() << "," << books[i].getAmount() << "," << books[i].getQuantity();
+            auto it = books.begin() + index;
+            books.insert(it, New);
         }
-        else
-            File << "\n"
-                 << books[i].getMaSach() << "," << books[i].getTenSach() << "," << books[i].getTheLoai() << ","
-                 << books[i].getTacGia() << "," << books[i].getNamXuatBan() << "," << books[i].getAmount() << "," << books[i].getQuantity();
-
-        File.close();
+        else if (chon == 1)
+        {
+            auto it = books.begin();
+            books.insert(it, New);
+        }
+        outputData_Sach_File(books);
         cout << "\t\tThem sach thanh cong !\n";
     }
 
@@ -602,8 +596,8 @@ public:
             if (books[i].getMaSach() == Find)
             {
                 check_find_sach = true;
-            xuat_thongtin_1quyen(books, i);
-            cout << "________________________________________________" << endl;
+                xuat_thongtin_1quyen(books, i);
+                cout << "________________________________________________" << endl;
             ms:
                 cout << "- Nhap ma sach moi: ";
                 getline(cin, MS);
@@ -705,15 +699,16 @@ public:
         else
             outputData_Sach_File(books);
     }
-    void outputData_Sach_File(vector<Sach> &books) // lấy data từ books ghi mới vào Sach.txt
-    {
+    void outputData_Sach_File(vector<Sach> &books){
+        // lấy data từ books ghi mới vào Sach.txt
         ofstream File;
         File.open("Sach.txt");
         int cnt = 0;
         for (int i = 0; i < books.size(); ++i)
         {
             File << books[i].getMaSach() << "," << books[i].getTenSach()
-                 << "," << books[i].getTheLoai() << "," << books[i].getTacGia() << "," << books[i].getNamXuatBan() << "," << books[i].getAmount() << "," << books[i].getQuantity();
+                 << "," << books[i].getTheLoai() << "," << books[i].getTacGia() << "," << books[i].getNamXuatBan() << ","
+                  << books[i].getAmount() << "," << books[i].getQuantity();
             if (cnt < books.size() - 1)
             {
                 File << endl;
@@ -722,8 +717,8 @@ public:
         }
         File.close();
     }
-    void readinputData_Sach(vector<Sach> &books) // lấy data từ file Sach.txt đẩy vào books
-    {
+    void readinputData_Sach(vector<Sach> &books){
+        // lấy data từ file Sach.txt đẩy vào books
         books.clear();
         string Ma, Name_book, TL, TG;
         int NamXB, amount, quantity;
@@ -749,7 +744,6 @@ public:
     }
     void ToanBoSach(vector<Sach> &books)
     {
-        cout << "\t\t\t\tLiet ke toan bo sach trong thu vien" << endl;
         cout << endl;
         cout << center("STT", 5) << " | "
              << center("Name", 25) << " | "
@@ -760,6 +754,11 @@ public:
              << center("Quantity", 9) << "\n";
 
         cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
+        if (books.size() == 0)
+        {
+            cout << "\t\tHien khong co quyen sach nao trong thu vien!" << endl;
+            return;
+        }
         for (int i = 0; i < books.size(); ++i)
         {
             cout << center(books[i].getMaSach(), 5) << " | "
@@ -842,30 +841,34 @@ public:
     {
         return a.getAmount() < b.getAmount();
     }
-    static bool cmpBook_name(Sach &a, Sach &b)
+    void arrange_book_amount(vector<Sach> books)
     {
-        return convert(a.getTenSach()) < convert(b.getTenSach());
+        sort(books.begin(), books.end(), cmpBook_amount_small_large);
+        cout << "\nDone sap xep sach theo tang dan gia tien!\n";
+        ToanBoSach(books);
     }
+    
     static bool cmpBook_quantity(Sach &a, Sach &b)
     {
         return a.getQuantity() < b.getQuantity();
     }
-    void arrange_book_quantity(vector<Sach> &books)
+    void arrange_book_quantity(vector<Sach> books)
     {
         sort(books.begin(), books.end(), cmpBook_quantity);
-        outputData_Sach_File(books);
+        cout << "\nDone sap xep sach theo tang dan so luong!\n";
+        ToanBoSach(books);
     }
-    void arrange_book_amount(vector<Sach> &books)
+    static bool cmpBook_name(Sach &a, Sach &b)
     {
-        sort(books.begin(), books.end(), cmpBook_amount_small_large);
-        outputData_Sach_File(books);
+        return a.convert(a.getTenSach()) < b.convert(b.getTenSach());
     }
-    void arrange_book_name(vector<Sach> &books)
+    void arrange_book_name(vector<Sach> books)
     {
         sort(books.begin(), books.end(), cmpBook_name);
-        outputData_Sach_File(books);
+        cout << "\nDone sap xep sach theo tang dan name!\n";
+        ToanBoSach(books);
     }
-    void search_book_to_id(vector<Sach> &books)
+    void search_book_to_id(vector<Sach> books)
     {
         string id;
         cout << "- Nhap ma sach ban can tim: ";
@@ -937,10 +940,9 @@ public:
     }
 };
 //-------------------------------------------------------------------
-class List_students
+class List_students : public StringManipulator
 {
 public:
-    vector<BanDoc> students;
     void addStudent(vector<BanDoc> &students)
     {
         cout << "\t\tNhap them mot ban doc" << endl;
@@ -993,23 +995,6 @@ public:
         cin >> date_of_birth;
         BanDoc New(MSV, standardization(Ten), NganhHoc, Khoa, convert_date(date_of_birth));
         students.push_back(New);
-        ofstream File;
-        File.open("SinhVien.txt", ios::app);
-        int i = students.size() - 1;
-        if (i == 1)
-        {
-            File
-                << students[i].getMSV() << "," << students[i].getHoTen() << "," << students[i].getNganhHoc() << ","
-                << students[i].getKhoa() << "," << students[i].getDate_of_Birth();
-        }
-        else
-        {
-            File << "\n"
-                 << students[i].getMSV() << "," << students[i].getHoTen() << "," << students[i].getNganhHoc() << ","
-                 << students[i].getKhoa() << "," << students[i].getDate_of_Birth();
-        }
-
-        File.close();
         cout << "\t\tThem ban doc thanh cong !\n";
     }
     void removeStudent(vector<BanDoc> &students)
@@ -1017,26 +1002,16 @@ public:
         string MSV;
         cout << "- Nhap ma sinh vien can xoa: ";
         cin >> MSV;
-
-        bool found = false;
-
         for (int i = 0; i < students.size(); ++i)
         {
             if (students[i].getMSV() == MSV)
             {
-                found = true;
                 students.erase(students.begin() + i);
                 cout << "Da xoa sach co ma: " << MSV << endl;
-                break;
+                return;
             }
         }
-
-        if (!found)
-        {
-            cout << "Khong tim thay ma sinh vien: " << MSV << endl;
-        }
-        else
-            outputData_BanDoc_File(students);
+        cout << "\t\tKhong tim thay ma sinh vien: " << MSV << endl;
     }
     void updateStudent(vector<BanDoc> &students)
     {
@@ -1046,19 +1021,18 @@ public:
         string MSV, Ten, NganhHoc, Khoa;
         string date_of_birth;
         cout << "Nhap ma sinh vien can sua: ";
-        bool check_find_student = false;
         cin.ignore();
-        getline(cin, MSV);
+        cin >> MSV;
+        cin.ignore();
         for (int i = 0; i < students.size(); ++i)
         {
             if (students[i].getMSV() == MSV)
             {
-                check_find_student = true;
                 xuat_thongtin_1student(students, i);
                 cout << "______________________________" << endl;
             ms:
                 cout << "- Nhap ma sinh vien moi: ";
-                cin >> MSV;
+                getline(cin, MSV);
                 if (MSV == "")
                 {
                     cout << "\t\t\tKhong duoc de trong !\n";
@@ -1066,7 +1040,6 @@ public:
                 }
             ten:
                 cout << "- Nhap ten sinh vien moi: ";
-
                 getline(cin, Ten);
                 if (Ten == "")
                 {
@@ -1081,7 +1054,6 @@ public:
                     cout << "\t\t\tKhong duoc de trong !\n";
                     goto nh;
                 }
-
             khoav2:
                 cout << "- Nhap Khoa hoc moi: ";
                 cin >> Khoa;
@@ -1094,57 +1066,12 @@ public:
                 cin >> date_of_birth;
                 BanDoc change(MSV, standardization(Ten), NganhHoc, Khoa, convert_date(date_of_birth));
                 students[i] = change;
-                break;
+                return;
             }
         }
-        if (!check_find_student)
-            cout << "- Khong ton tai ma sinh vien can sua !\n";
-        else
-            outputData_BanDoc_File(students);
+        cout << "- Khong ton tai ma sinh vien can sua !\n";
     }
-    void outputData_BanDoc_File(vector<BanDoc> &students)
-    {
-        ofstream File;
-        File.open("SinhVien.txt");
-        int cnt = 0;
-        for (int i = 0; i < students.size(); ++i)
-        {
-            File
-                << students[i].getMSV() << "," << students[i].getHoTen() << "," << students[i].getNganhHoc() << ","
-                << students[i].getKhoa() << "," << students[i].getDate_of_Birth();
-            ;
-            if (cnt < students.size() - 1)
-            {
-                File << endl;
-                ++cnt;
-            }
-        }
-        File.close();
-    }
-    void inputData_BanDoc(vector<BanDoc> &students) // lấy data từ file SinhVien.txt
-    {
-        students.clear();
-        string MSV = "", Ten = "", NganhHoc = "", Khoa = "";
-        string date_of_birth = "";
-        ifstream File("SinhVien.txt");
-        if (!File.is_open())
-            return;
-        while (!File.eof())
-        {
-            getline(File, MSV, ',');
-            getline(File, Ten, ',');
-            getline(File, NganhHoc, ',');
-            getline(File, Khoa, ',');
-            File >> date_of_birth;
-            File.ignore(1, '\n');
-            BanDoc bd(MSV, standardization(Ten), NganhHoc, Khoa, convert_date(date_of_birth));
-            students.push_back(bd);
-        }
-        File.close();
-    }
-    void Export_a_list_of_student(vector<BanDoc> &students)
-    {
-        cout << "\t\t\t\tIn ra cac ban doc trong thu vien hien tai" << endl;
+    void Export_a_list_of_student(vector<BanDoc> &students) {
         cout << endl;
         cout << center("STT", 5) << " | "
              << center("Ma sinh vien", 15) << " | "
@@ -1152,10 +1079,12 @@ public:
              << center("Nganh Hoc", 15) << " | "
              << center("Khoa", 10) << " | "
              << center("Ngay sinh", 12) << "\n";
-
         cout << string(5 + 15 * 2 + 25 + 10 + 12 + 5 * 3, '_') << "\n";
-        for (int i = 0; i < students.size(); ++i)
-        {
+        if (students.size() == 0){
+            cout << "\t\tHien khong co ban doc nao trong thu vien!\n";
+            return;
+        }
+        for (int i = 0; i < students.size(); ++i){
             cout << centerv2(i + 1, 5) << " | "
                  << center(students[i].getMSV(), 15) << " | "
                  << center(students[i].getHoTen(), 25) << " | "
@@ -1166,15 +1095,13 @@ public:
                 cout << string(5 + 15 * 2 + 25 + 10 + 12 + 5 * 3, '_') << "\n";
         }
     }
-    void xuat_thongtin_1student(vector<BanDoc> &students, int i)
-    {
+    void xuat_thongtin_1student(vector<BanDoc> &students, int i){
         cout << center("STT", 5) << " | "
              << center("Ma sinh vien", 15) << " | "
              << center("Ho Ten", 25) << " | "
              << center("Nganh Hoc", 15) << " | "
              << center("Khoa", 10) << " | "
              << center("Ngay sinh", 15) << "\n";
-
         cout << string(5 + 15 * 3 + 25 + 10 + 5 * 3, '_') << "\n";
         cout << centerv2(i + 1, 5) << " | "
              << center(students[i].getMSV(), 15) << " | "
@@ -1183,24 +1110,27 @@ public:
              << center(students[i].getKhoa(), 10) << " | "
              << center(students[i].getDate_of_Birth(), 15) << "\n";
     }
-    static bool cmp_student_to_name(BanDoc &a,BanDoc &b)
+    static bool cmp_student_to_name(BanDoc &a, BanDoc &b)
     {
-        return convertv2(a.getHoTen()) < convertv2(b.getHoTen());
+        return a.convertv2(a.getHoTen()) < b.convertv2(b.getHoTen());
     }
-    void arrange_student_name(vector<BanDoc> &students)
+    void arrange_student_name(vector<BanDoc> students)
     {
         sort(students.begin(), students.end(), cmp_student_to_name);
-        outputData_BanDoc_File(students);
+        cout << "\nDone! Da sap xep name ban doc theo thu tu alphabet\n";
+        Export_a_list_of_student(students);
     }
-    static bool cmp_student_to_majors(BanDoc &a,BanDoc &b){
+    static bool cmp_student_to_majors(BanDoc &a, BanDoc &b)
+    {
         return a.getNganhHoc() < b.getNganhHoc();
     }
-    void arrange_student_majors(vector<BanDoc> &students){
-        sort(students.begin(), students.end(), cmp_student_to_majors);
-        outputData_BanDoc_File(students);
-    }
-    void search_student_to_id(vector<BanDoc> &students)
+    void arrange_student_majors(vector<BanDoc> students)
     {
+        sort(students.begin(), students.end(), cmp_student_to_majors);
+        cout << "\nDone! Da sap xep cac ban doc theo nganh\n";
+        Export_a_list_of_student(students);
+    }
+    void search_student_to_id(vector<BanDoc> &students) {
         string id;
         cout << "- Nhap ma sinh vien ban doc ban can tim: ";
         cin >> id;
@@ -1215,8 +1145,7 @@ public:
             cout << "\n[!] : Khong tim thay ban doc co id = " << id << "\n";
         }
     }
-    void search_student_to_name(vector<BanDoc> &students)
-    {
+    void search_student_to_name(vector<BanDoc> &students) {
         string name;
         cout << "- Nhap ten sinh vien ban doc ban can tim: ";
         cin.ignore();
@@ -1236,7 +1165,6 @@ public:
 class List_BorrowPay : public List_Books
 {
 public:
-    vector<PhieuMuon> borrow_pay;
     void MuonSach(vector<Sach> &books, vector<PhieuMuon> &borrow_pay)
     {
         // Quản lý theo mã sinh viên và mã sách
@@ -1263,7 +1191,8 @@ public:
             {
                 break;
             }
-            else if(check == 2) {
+            else if (check == 2)
+            {
                 cout << "\t\tSach hien dang co ban doc khac muon.\n";
                 continue;
             }
@@ -1326,13 +1255,13 @@ public:
         PhieuMuon pm(0, nMSV, nMS, standardization(name_students_borrow_pay));
         borrow_pay.push_back(pm);
         cout << "______________________________________\n";
-        cout << "\t\tYeu cau cua ban dang duoc thuc hien!\n";
-        cout << "\t\tMSV: " << nMSV << endl;
-        cout << "\t\tHo ten: " << name_students_borrow_pay << endl;
-        cout << "\t\tMa sach: " << nMS << endl;
-        cout << "\t\tThoi gian: " << get_time() << endl;
-        cout << "\t\tNgay: " << get_day() << endl;
-        cout << "\t\tTao phieu muon thanh cong!\n";
+        cout << "Yeu cau cua ban dang duoc thuc hien..." << endl;
+        cout << "MSV: " << nMSV << endl;
+        cout << "Ho ten: " << name_students_borrow_pay << endl;
+        cout << "Ma sach: " << nMS << endl;
+        cout << "Thoi gian: " << get_time() << endl;
+        cout << "Ngay: " << get_day() << endl;
+        cout << "Tao phieu muon thanh cong!\n";
         cout << "______________________________________\n";
         ofstream File;
         File.open("PhieuMuon.txt", ios::app);
@@ -1340,13 +1269,13 @@ public:
         if (i == 0)
         {
             File
-                << borrow_pay[i].getMSV() << "," << borrow_pay[i].getMaSach() << "," << borrow_pay[i].getname_students() << "," << borrow_pay[i].xNgayMuon.getNgay() << ","
+                << borrow_pay[i].getMSV() << "," << borrow_pay[i].getMaSach() << "," << borrow_pay[i].getHoTen() << "," << borrow_pay[i].xNgayMuon.getNgay() << ","
                 << borrow_pay[i].xNgayMuon.getThang() << "," << borrow_pay[i].xNgayMuon.getNam() << "," << borrow_pay[i].xNgayTra.getNgay() << ","
                 << borrow_pay[i].xNgayTra.getThang() << "," << borrow_pay[i].xNgayTra.getNam();
         }
         else
             File << "\n"
-                 << borrow_pay[i].getMSV() << "," << borrow_pay[i].getMaSach() << "," << borrow_pay[i].getname_students() << "," << borrow_pay[i].xNgayMuon.getNgay() << ","
+                 << borrow_pay[i].getMSV() << "," << borrow_pay[i].getMaSach() << "," << borrow_pay[i].getHoTen() << "," << borrow_pay[i].xNgayMuon.getNgay() << ","
                  << borrow_pay[i].xNgayMuon.getThang() << "," << borrow_pay[i].xNgayMuon.getNam() << "," << borrow_pay[i].xNgayTra.getNgay() << ","
                  << borrow_pay[i].xNgayTra.getThang() << "," << borrow_pay[i].xNgayTra.getNam();
         File.close();
@@ -1366,10 +1295,11 @@ public:
         for (int i = 0; i < books.size(); ++i)
         {
             if (books[i].getMaSach() == MS)
-            {   
-                if(books[i].getQuantity() > 0)
+            {
+                if (books[i].getQuantity() > 0)
                     return 1;
-                else return 2;
+                else
+                    return 2;
             }
         }
         return 0;
@@ -1382,7 +1312,7 @@ public:
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
             File
-                << borrow_pay[borrow_pay.size() - 1].getMSV() << "," << borrow_pay[borrow_pay.size() - 1].getMaSach() << "," << borrow_pay[borrow_pay.size() - 1].getname_students() << "," << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getNgay() << ","
+                << borrow_pay[borrow_pay.size() - 1].getMSV() << "," << borrow_pay[borrow_pay.size() - 1].getMaSach() << "," << borrow_pay[borrow_pay.size() - 1].getHoTen() << "," << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getNgay() << ","
                 << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getThang() << "," << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getNam() << "," << borrow_pay[borrow_pay.size() - 1].xNgayTra.getNgay() << "," << borrow_pay[borrow_pay.size() - 1].xNgayTra.getThang() << ","
                 << borrow_pay[borrow_pay.size() - 1].xNgayTra.getNam();
             if (cnt < borrow_pay.size() - 1)
@@ -1393,8 +1323,7 @@ public:
         }
         File.close();
     }
-    void inputData_PhieuMuon(vector<PhieuMuon> &borrow_pay) // lấy data từ file PhieuMuon.txt
-    {
+    void inputData_PhieuMuon(vector<PhieuMuon> &borrow_pay){
         borrow_pay.clear();
         string MSV = "";
         string MS = "";
@@ -1430,8 +1359,7 @@ public:
         }
         File.close();
     }
-    void Export_a_list_of_borrowed_tickets(vector<PhieuMuon> &borrow_pay)
-    {
+    void Export_a_list_of_borrowed_tickets(vector<PhieuMuon> &borrow_pay){
         cout << "\t\t\t\tPhieu muon sach thu vien" << endl;
         cout << endl;
         cout << center("STT", 5) << " | "
@@ -1440,12 +1368,11 @@ public:
              << center("Ma sach", 15) << " | "
              << center("Ngay muon", 14) << " | "
              << center("Ngay tra", 12) << "\n";
-
         cout << string(5 + 15 + 25 * 2 + 14 + 12 + 5 * 3, '_') << "\n";
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
             cout << centerv2(i + 1, 5) << " | "
-                 << center(borrow_pay[i].getname_students(), 25) << " | "
+                 << center(borrow_pay[i].getHoTen(), 25) << " | "
                  << center(borrow_pay[i].getMSV(), 25) << " | "
                  << center(borrow_pay[i].getMaSach(), 15) << " | "
                  << center(convert_datev2(borrow_pay[i].xNgayMuon.getNgay(), borrow_pay[i].xNgayMuon.getThang(), borrow_pay[i].xNgayMuon.getNam()), 14) << " | "
@@ -1454,8 +1381,7 @@ public:
                 cout << string(5 + 15 + 25 * 2 + 14 + 12 + 5 * 3, '_') << "\n";
         }
     }
-    void TraSach(vector<Sach> &books, vector<PhieuMuon> &borrow_pay)
-    {
+    void TraSach(vector<Sach> &books, vector<PhieuMuon> &borrow_pay){
         cin.ignore();
         cout << "\t\tTra sach" << endl;
         cout << "[!] : Nhap N de thoat.\n\n";
@@ -1482,9 +1408,11 @@ public:
                      << center("Ngay muon", 14) << " | "
                      << center("Ngay tra", 12) << "\n";
             }
-            if(borrow_pay[i].getMSV() == msv) xuat_thongtin1phieumuon(borrow_pay, i);
+            if (borrow_pay[i].getMSV() == msv)
+                xuat_thongtin1phieumuon(borrow_pay, i);
         }
-        if(check != -1) goto xname;
+        if (check != -1)
+            goto xname;
         cout << "- Khong co ma sinh vien nao nhu vay da muon sach!\nNhap lai:\n";
         goto xmsv;
     xname:
@@ -1496,7 +1424,7 @@ public:
             cout << "\t\tBan chon thoat!\n";
             return;
         }
-        if (borrow_pay[check].getname_students() == standardization(name))
+        if (borrow_pay[check].getHoTen() == standardization(name))
         {
             goto xms;
         }
@@ -1530,11 +1458,10 @@ public:
         outputData_PhieuMuon_File(borrow_pay);
         outputData_Sach_File(books);
     }
-    void xuat_thongtin1phieumuon(vector<PhieuMuon> &borrow_pay, int i)
-    {
+    void xuat_thongtin1phieumuon(vector<PhieuMuon> &borrow_pay, int i){
         cout << string(5 + 15 + 25 * 2 + 14 + 12 + 5 * 3, '_') << "\n";
         cout << centerv2(i + 1, 5) << " | "
-             << center(borrow_pay[i].getname_students(), 25) << " | "
+             << center(borrow_pay[i].getHoTen(), 25) << " | "
              << center(borrow_pay[i].getMSV(), 25) << " | "
              << center(borrow_pay[i].getMaSach(), 15) << " | "
              << center(convert_datev2(borrow_pay[i].xNgayMuon.getNgay(), borrow_pay[i].xNgayMuon.getThang(), borrow_pay[i].xNgayMuon.getNam()), 14) << " | "
@@ -1546,11 +1473,12 @@ public:
         cout << "- Nhap ten ban doc: ";
         cin.ignore();
         getline(cin, name);
+        bool found = false;
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
-            if (borrow_pay[i].getname_students() == standardization(name))
+            if (found == false && borrow_pay[i].getHoTen() == standardization(name))
             {
-                cout << "[!] : Da tim thay phieu sach cua ban doc " << name << " !\n\n";
+                cout << "[!] : Da tim thay phieu muon cua ban doc " << name << " !\n\n";
                 cout << center("STT", 5) << " | "
                      << center("Ho Ten", 25) << " | "
                      << center("Ma sinh vien", 25) << " | "
@@ -1558,10 +1486,15 @@ public:
                      << center("Ngay muon", 14) << " | "
                      << center("Ngay tra", 12) << "\n";
                 xuat_thongtin1phieumuon(borrow_pay, i);
-                return;
+                found = true;
+            }
+            else if (found && borrow_pay[i].getHoTen() == standardization(name))
+            {
+                xuat_thongtin1phieumuon(borrow_pay, i);
             }
         }
-        cout << "\n[!] : Khong ton tai phieu sach co ten ban doc " << name << " !\n\n";
+        if (!found)
+            cout << "\n[!] : Khong ton tai phieu muon co ten ban doc " << name << " !\n\n";
     }
 
     void InPhieumuon_quahan(vector<PhieuMuon> &borrow_pay)
@@ -1606,8 +1539,7 @@ public:
         }
         cout << "\t\tBan chua muon quyen sach nao!\n";
     }
-    int check_phieuquahan_motsinhvien(vector<PhieuMuon> &borrow_pay, string username)
-    {
+    int check_phieuquahan_motsinhvien(vector<PhieuMuon> &borrow_pay, string username){
         int cnt = 0;
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
@@ -1632,8 +1564,7 @@ private:
     List_students _students;
 
 public:
-    void menu1()
-    {
+    void menu1() {
         int chon;
         do
         {
@@ -1665,6 +1596,7 @@ public:
                 break;
             case 4:
                 cout << "[4] : Liet ke toan bo sach trong thu vien\n";
+                cout << "\t\t\t\tLiet ke toan bo sach trong thu vien" << endl;
                 _books.ToanBoSach(books);
                 break;
             case 5:
@@ -1684,9 +1616,7 @@ public:
             }
         } while (chon != 5);
     }
-    void menu2()
-    {
-
+    void menu2() {
         int chon;
         do
         {
@@ -1737,15 +1667,14 @@ public:
             }
         } while (chon != 5);
     }
-    void menu3() // quản lý sinh viên ra vào đọc sách thư viện
-    {
+    void menu3(){
         int chon;
         do
         {
             system("cls");
             cout << "======================= MENU 3 ==============================\n";
             cout << "==                                                         ==\n";
-            cout << "==        1.Them mot ban doc.                              ==\n";
+            cout << "==        1.Them mot ban doc vao thu vien.                 ==\n";
             cout << "==        2.Sua thong tin ban doc.                         ==\n";
             cout << "==        3.Xoa mot ban doc.                               ==\n";
             cout << "==        4.Liet ke toan bo sinh vien o trong thu vien.    ==\n";
@@ -1770,6 +1699,7 @@ public:
                 break;
             case 4:
                 cout << "[4] : Liet ke toan bo sinh vien o trong thu vien\n";
+                cout << "\t\t\t\tIn ra cac ban doc trong thu vien hien tai" << endl;
                 _students.Export_a_list_of_student(students);
                 break;
             case 5:
@@ -1789,8 +1719,7 @@ public:
             }
         } while (chon != 5);
     }
-    void menu4()
-    {
+    void menu4() {
         int chon;
         do
         {
@@ -1811,22 +1740,18 @@ public:
             case 1:
                 cout << "[1] : Sap xep sach theo thu tu tang dan gia tien\n";
                 _books.arrange_book_amount(books);
-                cout << "\nDone sap xep sach theo ma!\n";
                 break;
             case 2:
                 cout << "[2] : Sap xep sach theo thu tu tang dan ten sach\n";
                 _books.arrange_book_name(books);
-                cout << "\nDone sap xep sach theo name!\n";
                 break;
             case 3:
                 cout << "[3] : Sap xep cac ban doc theo nganh\n";
                 _students.arrange_student_majors(students);
-                cout << "\nDone sap xep ban doc theo nganh!\n";
                 break;
             case 4:
                 cout << "[4] : Sap xep cac ban doc theo thu tu alphabet tang dan theo ten + ho\n";
                 _students.arrange_student_name(students);
-                cout << "\nDone sap xep ban doc theo name!\n";
                 break;
             case 5:
                 cout << "[5] : Exit\n";
@@ -1845,11 +1770,9 @@ public:
             }
         } while (chon != 5);
     }
-    void menu5()
-    {
+    void menu5() {
         int chon;
-        do
-        {
+        do {
             system("cls");
             cout << "======================= MENU 5 ==========================\n";
             cout << "==                                                     ==\n";
@@ -1858,7 +1781,7 @@ public:
             cout << "==        3.Tim kiem theo the loai sach                ==\n";
             cout << "==        4.Tim kiem cac ban doc theo ma sinh vien     ==\n";
             cout << "==        5.Tim kiem ban doc theo name                 ==\n";
-            cout << "==        6.Tim kiem phieu sach theo ten sinh vien.    ==\n";
+            cout << "==        6.Tim kiem phieu muon theo ten sinh vien.    ==\n";
             cout << "==        7.Exit.                                      ==\n";
             cout << "=========================================================\n";
             cout << "=> Moi chon chuc nang: ";
@@ -1957,11 +1880,11 @@ public:
             }
         } while (chon != 4);
     }
-    void menu_admin()
-    {
+    void menu_admin() {
+    // lúc bắt đầu chương trình sẽ lấy all data từ file push vào vector
+    // để đồng bộ vector vs file
         _books.readinputData_Sach(books);
         _borrowPay.inputData_PhieuMuon(borrow_pay);
-        _students.inputData_BanDoc(students);
         int chon;
         do
         {
@@ -2016,7 +1939,7 @@ public:
                 break;
             case 7:
                 flagv2 = true;
-                cout << "[7] : Thoat\n";
+                cout << "[7] : Exit\n";
                 cout << "\n\t\tXin chao va hen gap lai !\n";
                 break;
             default:
@@ -2033,14 +1956,13 @@ public:
             }
         } while (chon != 7);
     }
-    void menu_user(string username, string password, string fullname)
-    {
+    void menu_user(string username, string password, string fullname) {
+    // lúc bắt đầu chương trình sẽ lấy all data từ file push vào vector
+    // để đồng bộ vector vs file
         _books.readinputData_Sach(books);
         _borrowPay.inputData_PhieuMuon(borrow_pay);
-        _students.inputData_BanDoc(students);
         int chon;
-        do
-        {
+        do {
             system("cls");
             cout << "\t     Chuong Trinh Quan Ly Thu Vien." << endl;
             cout << "  Hello : " << fullname << endl;
@@ -2056,7 +1978,7 @@ public:
             cout << "==        5.Tim kiem sach theo ten.                    ==\n";
             cout << "==        6.Tim kiem theo the loai sach ban muon doc.  ==\n";
             cout << "==        7.Sap xep sach theo tang dan gia tien.       ==\n";
-            cout << "==        8.Exit.                                      ==\n";
+            cout << "==        8.Dang xuat.                                 ==\n";
             cout << "==                                                     ==\n";
             cout << "=========================================================\n";
             cout << "=> Moi chon chuc nang: ";
@@ -2094,7 +2016,7 @@ public:
                 cout << "\t\tDa sap xep thanh cong!\n";
                 break;
             case 8:
-                cout << "[8] : Thoat\n";
+                cout << "[8] : Dang xuat\n";
                 cout << "\n\t\tXin chao va hen gap lai !\n";
                 break;
             default:
@@ -2112,7 +2034,7 @@ public:
         } while (chon != 8);
     }
 };
-class Login_Signup : public app
+class Login_Signup : public app, public StringManipulator
 {
 public:
     bool checkuser(string username, string password, string filetxt)
@@ -2136,9 +2058,7 @@ public:
     void forgotPassword()
     {
     }
-    void admin_login()
-    {
-
+    void admin_login() {
         string username, password;
     lg:
         system("cls");
@@ -2193,7 +2113,7 @@ public:
                 }
             } while (chon != 1 && chon != 2);
         }
-        if (ok || ok2)// nếu đã vào menu rồi mà quay về đây thì chắc chắn là bạn đã chọn chức năng thoát
+        if (ok || ok2) // nếu đã vào menu rồi mà quay về đây thì chắc chắn là bạn đã chọn chức năng thoát
             return;
         else if (username.length() < 8)
         {
@@ -2255,7 +2175,8 @@ public:
         }
         else
         {
-            cout << "\n\t\tTai khoan hoac mat khau khong dung!\n\n";
+            cout << "\n\t\tTai khoan hoac mat khau khong dung!\n";
+            cout << "_____________________________________________\n";
             int chon;
             do
             {
@@ -2301,7 +2222,7 @@ public:
             getline(File, usernamev2, ' ');
             getline(File, passwordv2, ' ');
             getline(File, fullname, '\n');
-            if (usernamev2 == username)// chỉ check tài khoản
+            if (usernamev2 == username) // chỉ check tài khoản
             {
                 return true;
             }
@@ -2309,9 +2230,7 @@ public:
         File.close();
         return false;
     }
-    void user_register()
-    {
-
+    void user_register() {
         string username, password, fullname;
     front:
         system("cls");
@@ -2346,6 +2265,35 @@ public:
         {
             cout << "\t\tPassword phai co 8 ky tu tro len. Nhap lai!\n";
             goto pass;
+        }
+        else
+        {
+            bool a[3] = {false, false, false};
+            for (char c : password)
+            {
+                if (isdigit(c))
+                {
+                    a[0] = true;
+                }
+                if ('a' <= c && c <= 'z')
+                {
+                    a[1] = true;
+                }
+                if ('A' <= c && c <= 'Z')
+                {
+                    a[2] = true;
+                }
+                if (a[0] && a[1] && a[2])
+                    break;
+            }
+            for (bool x : a)
+            {
+                if (x == false)
+                {
+                    cout << "\t\tPassword phai co day du cac ky tu a-z, A-Z, 0-9. Nhap lai!\n";
+                    goto pass;
+                }
+            }
         }
         if (!valid_account(username, password))
         {
@@ -2452,6 +2400,35 @@ public:
         {
             cout << "\t\tPassword phai co 8 ky tu tro len. Nhap lai!\n";
             goto pass;
+        }
+        else
+        {
+            bool a[3] = {false, false, false};
+            for (char c : password)
+            {
+                if (isdigit(c))
+                {
+                    a[0] = true;
+                }
+                if ('a' <= c && c <= 'z')
+                {
+                    a[1] = true;
+                }
+                if ('A' <= c && c <= 'Z')
+                {
+                    a[2] = true;
+                }
+                if (a[0] && a[1] && a[2])
+                    break;
+            }
+            for (bool x : a)
+            {
+                if (x == false)
+                {
+                    cout << "\t\tPassword phai co day du cac ky tu a-z, A-Z, 0-9. Nhap lai!\n";
+                    goto pass;
+                }
+            }
         }
         // nhập đúng định dạng xong thì đến bước check data
         bool check = false;

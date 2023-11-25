@@ -176,12 +176,7 @@ void add_value_toVECTOR(Node<T> *root, VECTOR<T> &v)
         add_value_toVECTOR(root->right, v);
     }
 }
-template <class T>
-void CLEAR(Node<T> *&root)
-{
-    root = NULL;
-}
-// Cây nhị phân tìm kiếm
+// tìm kiếm theo BST
 // template <class T>
 // T setting_lower_bound(Node<T> *root, T key)
 // {
@@ -211,6 +206,7 @@ void CLEAR(Node<T> *&root)
 // 		return tmp->val;
 // 	};
 // }
+
 // Lomuto partition
 template <class T>
 T partition(VECTOR<T> &v, int l, int r)
@@ -273,6 +269,17 @@ T setting_upper_bound(VECTOR<T> &v, int l, int r, T key)
     }
     return res;
 }
+template<class T>
+void CLEAR(Node<T> *&root)//phân bổ bộ nhớ và dọn dẹp các tài nguyên cây
+{
+    if (root)
+    {
+        CLEAR(root->left);
+        CLEAR(root->right);
+        delete root;
+        root = nullptr;//tránh sử dụng địa chỉ bộ nhớ đã xóa
+    }
+}
 template <class T>
 struct SET
 {
@@ -302,6 +309,7 @@ struct SET
     void clear()
     {
         CLEAR(root);
+        n = 0;
     }
     void erase(T x)
     {
@@ -332,18 +340,15 @@ struct SET
     }
     iterator find(T x)
     {
-        if (findBST(root, x))
-        {
             for (int i = 0; i < v.size(); ++i)
             {
                 if (v[i] == x)
                     return v.begin() + i;
             }
-        }
         return v.end();
     }
-    void erase(iterator it)
-    { // Xoá theo kiểu iterator
+    void erase(iterator it)// cùng tên hàm nhưng tham số truyền vào nó khác nên compiler sẽ biết mà phân biệt
+    {
         erase(*it);
         --n;
     }
@@ -408,13 +413,7 @@ int main()
     for (int x : A)
         cout << x << " ";
     cout << endl;
+    cout << *A.lower_bound(5) << endl;
     for (auto it = A.begin(); it != A.end(); ++it)
         cout << *it << " ";
-    cout << endl;
-    cout << *(A.begin() + 6) << endl;
-    auto it = A.begin() + 4;
-    A.erase(it);
-    A.clear();
-    for (int x : A)
-        cout << x << " ";
 }

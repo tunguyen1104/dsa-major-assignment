@@ -1,7 +1,11 @@
+005,5cm/s,Tieu Thuyet,Makoto Shinkai,2012,100000,0
+011,Ba Vuong,Truyen Tranh,mayuto,2023,30000,1
 003,Conan,Truyen Tranh,Aoyama,1997,30000,2
 002,Dragon Ball,Truyen Tranh,Toriyama,1995,30000,1
 123,Gio Mua Thu,Tieu Thuyet,ba nghia,2023,100000,0
-001,Mua Ha Bat Tan,Tieu Thuyet,TuNguyen,2023,100000,10
+007,May Dau Mua,Truyen Ngan,Tu_nguyen,2023,20000,1
+001,Mua Ha Bat Tan,Tieu Thuyet,TuNguyen,2023,100000,9
 356,Naruto,Truyen Tranh,nagato,1999,25000,2
-006,Vo Luyen Dinh Phong,Tieu Thuyet,Duong Khai,2015,129000,2
-4566,Yeu Than Ky,Tieu Thuyet,Nhiep ly,2023,123456,1
+004,Toan Chuc Phap Su,Truyen Tranh,Mac pham,2018,30000,2
+006,Vo Luyen Dinh Phong,Tieu Thuyet,Duong Khai,2015,129000,24
+4566,Yeu Than Ky,Tieu Thuyet,Nhiep ly,2023,123456,10
