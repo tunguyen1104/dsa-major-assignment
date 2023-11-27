@@ -6,6 +6,7 @@
         "iosfwd": "cpp",
         "istream": "cpp",
         "xiosbase": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "ostream": "cpp"
     }
 }

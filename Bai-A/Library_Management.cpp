@@ -3,8 +3,8 @@ using namespace std;
 #define endl "\n"
 bool flag = false;   // check xem web đang ở tư cách admin hay người dùng
 bool flagv2 = false; // check đã vào các mục menu con hay chưa, nếu vào rồi mà ra đây thì trước đó đã bấm Exit
-bool ok2 = false;    // check xem da dang nhap vao web hay chua
-bool ok = false;     // check dang ky
+bool ok2 = false;    // check xem đã đăng nhập vào web hay chưa
+bool ok = false;     // check đăng ký
 class StringManipulator
 {
 public:
@@ -566,7 +566,7 @@ public:
             books.push_back(New);
         else if (chon == 2)
         {
-            auto it = books.begin() + index;
+            auto it = books.begin() + index - 1;
             books.insert(it, New);
         }
         else if (chon == 1)
@@ -587,6 +587,7 @@ public:
         string MS, Ten, Loai, TG;
         int NXB;
         int amount;
+        int quantity;
         cout << "Nhap ma sach can sua: ";
         bool check_find_sach = false;
         cin.ignore();
@@ -610,7 +611,7 @@ public:
                 {
 
                     if (MS == books[i].getMaSach())
-                    {
+                    {   cout << "\nBan muon so luong quyen sach nay trong thu vien!\n";
                         int cnt = books[i].getQuantity();
                         books[i].setQuantity(cnt + 1);
                         cout << "\t Da tang so luong san pham " << books[i].getTenSach() << "!\n";
@@ -640,6 +641,14 @@ public:
                         }
                     }
                 }
+            tl:
+            cout << "- Nhap The Loai: ";
+            getline(cin, Loai);
+            if (Loai == "")
+            {
+                cout << "\t\t\tKhong duoc de trong !\n";
+                goto tl;
+            }
             tg:
                 cout << "- Nhap ten tac gia moi: ";
                 getline(cin, TG);
@@ -652,8 +661,11 @@ public:
                 cin >> NXB;
                 cout << "- Nhap gia cuon sach moi: ";
                 cin >> amount;
-                Sach change(MS, standardization(Ten), standardization(Loai), TG, NXB, amount, 1);
+                cout << "- Nhap so luong cuon sach moi: ";
+                cin >> quantity;
+                Sach change(MS, standardization(Ten), standardization(Loai), TG, NXB, amount, quantity);
                 books[i] = change;
+                cout << "\t\tDa sua thanh cong!\n";
                 break;
             }
         }
@@ -1180,7 +1192,7 @@ public:
                 cout << "Khong duoc de trong. Nhap lai!\n";
                 continue;
             }
-            else if (nMS == "N")
+            else if (nMS == "N" || nMS == "n")
             {
                 cout << "=========================\n";
                 cout << "Ban chon thoat !\n";
@@ -1219,7 +1231,7 @@ public:
                 cout << "Khong duoc de trong ! \n";
                 continue;
             }
-            else if (nMSV == "N")
+            else if (nMSV == "N" || nMSV == "n")
             {
                 cout << "=========================\n";
                 cout << "Ban chon thoat !\n";
@@ -1254,15 +1266,15 @@ public:
         }
         PhieuMuon pm(0, nMSV, nMS, standardization(name_students_borrow_pay));
         borrow_pay.push_back(pm);
-        cout << "______________________________________\n";
+        cout << "________________________________________\n";
         cout << "Yeu cau cua ban dang duoc thuc hien..." << endl;
-        cout << "MSV: " << nMSV << endl;
-        cout << "Ho ten: " << name_students_borrow_pay << endl;
-        cout << "Ma sach: " << nMS << endl;
-        cout << "Thoi gian: " << get_time() << endl;
-        cout << "Ngay: " << get_day() << endl;
-        cout << "Tao phieu muon thanh cong!\n";
-        cout << "______________________________________\n";
+        cout << "   MSV: " << nMSV << endl;
+        cout << "   Ho ten: " << standardization(name_students_borrow_pay) << endl;
+        cout << "   Ma sach: " << nMS << endl;
+        cout << "   Thoi gian: " << get_time() << endl;
+        cout << "   Ngay: " << get_day() << endl;
+        cout << "   Tao phieu muon thanh cong!\n";
+        cout << "________________________________________\n";
         ofstream File;
         File.open("PhieuMuon.txt", ios::app);
         int i = borrow_pay.size() - 1;
@@ -1312,9 +1324,9 @@ public:
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
             File
-                << borrow_pay[borrow_pay.size() - 1].getMSV() << "," << borrow_pay[borrow_pay.size() - 1].getMaSach() << "," << borrow_pay[borrow_pay.size() - 1].getHoTen() << "," << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getNgay() << ","
-                << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getThang() << "," << borrow_pay[borrow_pay.size() - 1].xNgayMuon.getNam() << "," << borrow_pay[borrow_pay.size() - 1].xNgayTra.getNgay() << "," << borrow_pay[borrow_pay.size() - 1].xNgayTra.getThang() << ","
-                << borrow_pay[borrow_pay.size() - 1].xNgayTra.getNam();
+                << borrow_pay[i].getMSV() << "," << borrow_pay[i].getMaSach() << "," << borrow_pay[i].getHoTen() << "," << borrow_pay[i].xNgayMuon.getNgay() << ","
+                << borrow_pay[i].xNgayMuon.getThang() << "," << borrow_pay[i].xNgayMuon.getNam() << "," << borrow_pay[i].xNgayTra.getNgay() << "," << borrow_pay[i].xNgayTra.getThang() << ","
+                << borrow_pay[i].xNgayTra.getNam();
             if (cnt < borrow_pay.size() - 1)
             {
                 File << endl;
@@ -1385,7 +1397,7 @@ public:
         cin.ignore();
         cout << "\t\tTra sach" << endl;
         cout << "[!] : Nhap N de thoat.\n\n";
-        string msv, ms, name;
+        string msv, ms;
         int check = -1;
     xmsv:
         cout << "- Nhap ma sinh vien: ";
@@ -1412,26 +1424,11 @@ public:
                 xuat_thongtin1phieumuon(borrow_pay, i);
         }
         if (check != -1)
-            goto xname;
+            goto xms;
         cout << "- Khong co ma sinh vien nao nhu vay da muon sach!\nNhap lai:\n";
         goto xmsv;
-    xname:
-        cout << "- Nhap ten sinh vien: ";
-        getline(cin, name);
-        if (name == "N" || name == "n")
-        {
-            cout << "\n===========================\n";
-            cout << "\t\tBan chon thoat!\n";
-            return;
-        }
-        if (borrow_pay[check].getHoTen() == standardization(name))
-        {
-            goto xms;
-        }
-        cout << "- Nhap sai ten sinh vien muon sach!\nNhap lai:\n";
-        goto xname;
     xms:
-        cout << "- Nhap ma sach: ";
+        cout << "- Nhap ma sach muon tra: ";
         cin >> ms;
         if (ms == "N" || ms == "n")
         {
@@ -1439,15 +1436,18 @@ public:
             cout << "\t\tBan chon thoat!\n";
             return;
         }
-        if (borrow_pay[check].getMaSach() == ms)
+        for (int i = 0; i < borrow_pay.size(); ++i)
         {
-            goto done;
+            if (borrow_pay[i].getMSV() == msv && borrow_pay[i].getMaSach() == ms)
+            {   
+                borrow_pay.erase(borrow_pay.begin() + i);
+                cout << "\tTra sach thanh cong!\n";
+                goto done;
+            }
         }
         cout << "- Nhap sai ma sach duoc muon!\nNhap lai:\n";
         goto xms;
     done:
-        borrow_pay.erase(borrow_pay.begin() + check);
-
         for (int i = 0; i < books.size(); ++i)
         {
             if (books[i].getMaSach() == ms)
@@ -1851,9 +1851,7 @@ public:
             {
             case 1:
                 cout << "[1] : Thong ke so sinh vien trong thu vien\n";
-                cout << "Hien dang co ";
-                cout << students.size() << endl;
-                cout << " sinh vien trong thu vien\n";
+                cout << "Hien dang co " << students.size() << " sinh vien trong thu vien\n";
                 break;
             case 2:
                 cout << "[2] : Thong ke so dau sach trong thu vien: ";
@@ -2013,7 +2011,6 @@ public:
             case 7:
                 cout << "[7] : Sap xep sach theo tang dan gia tien\n";
                 _books.arrange_book_amount(books);
-                cout << "\t\tDa sap xep thanh cong!\n";
                 break;
             case 8:
                 cout << "[8] : Dang xuat\n";
