@@ -196,68 +196,109 @@ public:
         this->quantity = quantity;
     }
     ~Sach(){};
-    void setMaSach(string Ma)
-    {
+    void setMaSach(string Ma){
         MaSach = Ma;
     }
+    friend istream& operator >> (istream& in, Sach &x){ 
+    ms:
+        cout << "- Nhap ma sach: ";
+        in >> x.MaSach;
+        if (x.MaSach.size() == 0)
+        {
+            cout << "\t\t\tKhong duoc de trong !\n";
+            goto ms;
+        }
+        in.ignore();
+    ten:
+        cout << "- Nhap ten sach: ";
+        getline(in, x.TenSach);
+        if (x.TenSach == ""){
+            cout << "\t\t\tKhong duoc de trong !\n";
+            goto ten;
+        }
+    tl:
+        cout << "- Nhap The Loai: ";
+        getline(in, x.TheLoai);
+        if (x.TheLoai == "")
+        {
+            cout << "\t\t\tKhong duoc de trong !\n";
+            goto tl;
+        }
+    tg:
+        cout << "- Nhap ten tac gia: ";
+        getline(in, x.TacGia);
+        if (x.TacGia == "")
+        {
+            cout << "\t\t\tKhong duoc de trong !\n";
+            goto tg;
+        }
+        cout << "- Nhap nam xuat ban: ";
+        in >> x.NamXuatBan;
+        cout << "- Nhap gia cuon sach: ";
+        in >> x.amount;
+        cout << "- Nhap so luong: ";
+        in >> x.quantity;
+        return in;
+    }
 
-    void setTenSach(string Ten)
-    {
+    friend ostream& operator << (ostream& out, const Sach x){
+        out << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
+        out << x.MaSach << " | "
+             << x.TenSach << " | "
+             << x.TheLoai << " | "
+             << x.TacGia << " | "
+             << x.NamXuatBan << " | "
+             << x.amount << " | "
+             << x.quantity << "\n";
+             return out;
+    }
+    bool operator < (Sach x){
+        return this->TenSach < x.TenSach;
+    }
+    void setTenSach(string Ten){
         TenSach = Ten;
     }
 
-    void setTheLoai(string Loai)
-    {
+    void setTheLoai(string Loai){
         TheLoai = Loai;
     }
 
-    void setTacGia(string TG)
-    {
+    void setTacGia(string TG){
         TacGia = TG;
     }
 
-    void setNamXuatBan(int NXB)
-    {
+    void setNamXuatBan(int NXB){
         this->NamXuatBan = NXB;
     }
-    void setAmount(int amount)
-    {
+    void setAmount(int amount){
         this->amount = amount;
     }
-    void setQuantity(int quantity)
-    {
+    void setQuantity(int quantity){
         this->quantity = quantity;
     }
-    string getMaSach()
-    {
+    string getMaSach(){
         return MaSach;
     }
 
-    string getTenSach()
-    {
+    string getTenSach(){
         return standardization(TenSach);
     }
 
-    string getTheLoai()
-    {
+    string getTheLoai(){
         return standardization(TheLoai);
     }
 
-    string getTacGia()
-    {
+    string getTacGia(){
         return TacGia;
     }
 
-    int getNamXuatBan()
-    {
+    int getNamXuatBan(){
         return NamXuatBan;
     }
-    int getAmount()
-    {
+    int getAmount(){
         return amount;
     }
-    int getQuantity()
-    {
+    int getQuantity(){
         return quantity;
     }
 };
@@ -757,7 +798,7 @@ public:
     void ToanBoSach(vector<Sach> &books)
     {
         cout << endl;
-        cout << center("STT", 5) << " | "
+        cout << center("ID", 5) << " | "
              << center("Name", 25) << " | "
              << center("The loai", 15) << " | "
              << center("Tac Gia", 15) << " | "
@@ -790,7 +831,7 @@ public:
         int NamXB, amount, quantity;
         cout << "\t\t\t\tLiet ke toan bo sach trong thu vien" << endl;
         cout << endl;
-        cout << center("STT", 5) << " | "
+        cout << center("ID", 5) << " | "
              << center("Name", 25) << " | "
              << center("The loai", 15) << " | "
              << center("Tac Gia", 15) << " | "
@@ -831,7 +872,7 @@ public:
     }
     void xuat_thongtin_1quyen(vector<Sach> &books, int i)
     {
-        cout << center("STT", 5) << " | "
+        cout << center("ID", 5) << " | "
              << center("Name", 25) << " | "
              << center("The loai", 15) << " | "
              << center("Tac Gia", 15) << " | "
@@ -928,7 +969,7 @@ public:
                 {
                     cout << "\t\t[!] Da tim thay quyen sach co the loai " << standardization(category) << endl
                          << endl;
-                    cout << center("STT", 5) << " | "
+                    cout << center("ID", 5) << " | "
                          << center("Name", 25) << " | "
                          << center("The loai", 15) << " | "
                          << center("Tac Gia", 15) << " | "
@@ -1540,12 +1581,22 @@ public:
         cout << "\t\tBan chua muon quyen sach nao!\n";
     }
     int check_phieuquahan_motsinhvien(vector<PhieuMuon> &borrow_pay, string username){
+        PhieuMuon current_day(0, "test", "test");
+        int day = current_day.xNgayMuon.getNgay();
+        int month = current_day.xNgayMuon.getThang();
+        int year = current_day.xNgayMuon.getNam();
         int cnt = 0;
         for (int i = 0; i < borrow_pay.size(); ++i)
         {
             if (borrow_pay[i].getMSV() == username)
+            {   
+                if (borrow_pay[i].xNgayTra.getNam() > year || (borrow_pay[i].xNgayTra.getNam() == year && (borrow_pay[i].xNgayTra.getThang() > month ||
+                                                                                                       (borrow_pay[i].xNgayTra.getThang() == month &&
+                                                                                                        borrow_pay[i].xNgayTra.getNgay() > day))))
             {
-                ++cnt;
+                continue;
+            }
+                else ++cnt;
             }
         }
         return cnt;

@@ -5,7 +5,7 @@ template <class T>
 class Node
 {
 public:
-    int val;
+    T val;
     Node *left;  // Lưu địa chỉ của node con bên trái
     Node *right; // Lưu địa chỉ của node con bên phải
 
@@ -16,8 +16,8 @@ public:
         newNode->right = newNode->left = NULL;
         return newNode;
     }
-    // 1. Thao tác tìm kiếm
 
+    // 1. Thao tác tìm kiếm
     bool findBST(Node<T> *root, T key)
     {
         if (root == NULL)
@@ -29,8 +29,8 @@ public:
         else
             return findBST(root->left, key);
     }
-    // 2.Thao tác chèn
 
+    // 2.Thao tác chèn
     void add(Node<T> *&root, T key)
     {
         if (root == NULL)
@@ -43,8 +43,8 @@ public:
         else
             add(root->left, key);
     }
-    // 3.Thao tác xóa
 
+    // 3.Thao tác xóa
     Node<T> *minNode(Node<T> *root)
     {
         // Find node con min_element and > root
@@ -55,7 +55,6 @@ public:
         }
         return tmp;
     }
-
     Node<T> *deleteNode(Node<T> *root, T key)
     {
         if (root == NULL)
@@ -109,7 +108,7 @@ class VECTOR
     T *buf;     // buffer
 
     // mở rộng kích thước của một mảng động.
-    void expand(int new_cap)
+    void auto_resize(int new_cap)
     {
         if (new_cap < cap)
             return;
@@ -146,7 +145,7 @@ public:
     void push_back(T x)
     {
         if (n == cap)
-            expand(cap * 2 + 1);
+            auto_resize(cap * 2 + 1);
         buf[n++] = x;
     }
     void clear()
@@ -158,7 +157,7 @@ public:
         return buf[index];
     }
     typedef T *iterator;
-    iterator begin() // trả về địa chỉ
+    iterator begin()
     {
         return buf;
     }
@@ -359,6 +358,15 @@ int main()
     readFile("A.txt", A);//1 2 3 4 5 8
     readFile("B.txt", B);//5 4 11 56 0
     readFile("C.txt", C);//20 2 10 3 7 12 4
+    for(int x: A)
+        cout << x << " ";
+    cout << endl;
+    for(int x: B)
+        cout << x << " ";
+    cout << endl;
+    for(int x: C)
+        cout << x << " ";
+    cout << endl;
     for (int x : B)
     {
         A.insert(x);
