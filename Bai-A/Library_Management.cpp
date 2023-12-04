@@ -806,7 +806,7 @@ public:
              << center("Amount", 10) << " | "
              << center("Quantity", 9) << "\n";
 
-        cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
+        cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '-') << "\n";
         if (books.size() == 0)
         {
             cout << "\t\tHien khong co quyen sach nao trong thu vien!" << endl;
@@ -822,7 +822,7 @@ public:
                  << centerv2(books[i].getAmount(), 10) << " | "
                  << centerv2(books[i].getQuantity(), 8) << "\n";
             if (i < books.size() - 1)
-                cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '_') << "\n";
+                cout << string(5 + 25 + 15 * 2 + 12 + 10 + 9 + 3 * 6, '-') << "\n";
         }
     }
     void ToanBoSachv2(vector<Sach> &books) // lấy data từ file Sach.txt đẩy vào books
@@ -1563,7 +1563,8 @@ public:
         }
     }
     void inphieumuon_motsinhvien(vector<PhieuMuon> &borrow_pay, string username)
-    {
+    {   
+        bool found = false;
         cout << center("STT", 5) << " | "
              << center("Ho Ten", 25) << " | "
              << center("Ma sinh vien", 25) << " | "
@@ -1575,10 +1576,10 @@ public:
             if (borrow_pay[i].getMSV() == username)
             {
                 xuat_thongtin1phieumuon(borrow_pay, i);
-                return;
+                found = true;
             }
         }
-        cout << "\t\tBan chua muon quyen sach nao!\n";
+        if(!found) cout << "\t\tBan chua muon quyen sach nao!\n";
     }
     int check_phieuquahan_motsinhvien(vector<PhieuMuon> &borrow_pay, string username){
         PhieuMuon current_day(0, "test", "test");
@@ -2246,7 +2247,6 @@ public:
                     break;
                 case 3:
                     cout << "[3] : Vao web voi tu cach user!\n";
-                    ok = true;
                     user_login();
                     break;
                 default:
