@@ -1,5 +1,4 @@
 005,5cm/s,Tieu Thuyet,Makoto Shinkai,2012,100000,0
-003,Conan,Truyen Tranh,Aoyama,1997,30000,2
 002,Dragon Ball,Truyen Tranh,Toriyama,1995,30000,0
 007,May Dau Mua,Truyen Ngan,Tu_nguyen,2023,20000,1
 001,Mua Ha Bat Tan,Tieu Thuyet,TuNguyen,2023,100000,8
